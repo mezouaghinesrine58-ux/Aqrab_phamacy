@@ -1,0 +1,27 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Aqrab" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorAccent">@color/primary_green</item>
+        <item name="materialAlertDialogTheme">@style/GreenMaterialAlertDialog</item>
+        <item name="alertDialogTheme">@style/GreenAlertDialog</item>
+    </style>
+
+    <style name="GreenMaterialAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="buttonBarPositiveButtonStyle">@style/GreenAlertButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/GreenAlertButton</item>
+        <item name="buttonBarNeutralButtonStyle">@style/GreenAlertButton</item>
+    </style>
+
+    <style name="GreenAlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/primary_green</item>
+        <item name="buttonBarPositiveButtonStyle">@style/GreenAlertButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/GreenAlertButton</item>
+    </style>
+
+    <style name="GreenAlertButton" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/primary_green</item>
+    </style>
+</resources>

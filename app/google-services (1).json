@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "983072934265",
+    "project_id": "aqrab-49768",
+    "storage_bucket": "aqrab-49768.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983072934265:android:9a41d84f935776148dc7a8",
+        "android_client_info": {
+          "package_name": "com.app.aqrab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "983072934265-6bqe1ner0roo7b6qupajgipf60o3phs7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app.aqrab",
+            "certificate_hash": "304e0d28817ca6af2c17fc4d2d0843199e43a674"
+          }
+        },
+        {
+          "client_id": "983072934265-svbe4rlfv0j97dslmfuusbn6raqb4o7m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfb4g1EfBPOojeGRZdy1mbPVFjHOyJTmc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "983072934265-svbe4rlfv0j97dslmfuusbn6raqb4o7m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

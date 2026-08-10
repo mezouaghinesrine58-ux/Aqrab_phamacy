@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "983072934265",
+    "project_id": "aqrab-49768",
+    "storage_bucket": "aqrab-49768.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983072934265:android:9a41d84f935776148dc7a8",
+        "android_client_info": {
+          "package_name": "com.app.aqrab"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfb4g1EfBPOojeGRZdy1mbPVFjHOyJTmc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
