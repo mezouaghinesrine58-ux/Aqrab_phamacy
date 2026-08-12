@@ -1,12 +1,10 @@
 package com.app.aqrab;
-
 import android.os.Bundle;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager2.widget.ViewPager2;
-
 public class PatientActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
@@ -14,7 +12,6 @@ public class PatientActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(android.content.Context newBase) {
-        // تطبيق اللغة المختارة عند بدء النشاط لضمان استمرار اللغة بعد الانتقال
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 

@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.annotation.SuppressLint; 
 import android.app.Activity; 
 import android.content.Context;
@@ -36,7 +35,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
-
 public class SignUpActivity extends AppCompatActivity {
 
     // كائنات Firebase للمصادقة وقاعدة البيانات

@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -40,9 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import android.content.SharedPreferences;
-
 public class PharmacyDetailActivity extends AppCompatActivity {
-
     // متغيرات لحفظ بيانات الصيدلية المستلمة
     private String id, name, address, photoUrl, phone, description;
     private double latitude, longitude;
@@ -63,10 +60,8 @@ public class PharmacyDetailActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // تطبيق اللغة
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

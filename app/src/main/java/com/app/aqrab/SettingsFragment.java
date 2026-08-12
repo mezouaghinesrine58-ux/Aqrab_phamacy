@@ -55,16 +55,12 @@ public class SettingsFragment extends Fragment {
                 }
             }
     );
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // بناء واجهة الإعدادات من ملف XML
         View view = inflater.inflate(R.layout.activity_settings, container, false);
-
         // الحصول على الإعدادات المحفوظة محلياً
         prefs = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-
         // تهيئة العناصر، ربط المستمعين، وتحميل بيانات المستخدم الحالي
         initViews(view);
         setupListeners(view);
@@ -141,7 +137,7 @@ public class SettingsFragment extends Fragment {
 
     // دالة إعداد مستمعي الأحداث للعناصر القابلة للضغط والتبديل
     private void setupListeners(View view) {
-        // ميزة اليوم: الضغط على الصورة لفتح معرض الصور وتغييرها
+        //  الضغط على الصورة لفتح معرض الصور وتغييرها
         ivProfile.setOnClickListener(v -> {
             imagePickerLauncher.launch("image/*");
         });
@@ -190,7 +186,7 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        // ميزة اليوم: خيار حذف الحساب نهائياً
+        //  خيار حذف الحساب نهائياً
         view.findViewById(R.id.ll_delete_account).setOnClickListener(v -> {
             new AlertDialog.Builder(getContext())
                     .setTitle(R.string.delete_account_title)

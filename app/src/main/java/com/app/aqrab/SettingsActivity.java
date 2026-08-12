@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +19,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
 public class SettingsActivity extends AppCompatActivity {
 
     // أزرار التبديل لإشعارات النقص وانتهاء الصلاحية
@@ -37,19 +35,14 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // تطبيق اللغة المختارة
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // تعيين الواجهة
         setContentView(R.layout.activity_settings);
-
         // تهيئة الإعدادات المحلية
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-
         // تهيئة العناصر، المستمعين، وتحميل بيانات المستخدم
         initViews();
         setupListeners();

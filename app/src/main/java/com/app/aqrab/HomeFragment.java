@@ -71,7 +71,7 @@ public class HomeFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Setup image pickers
+        // إعداد مشغلات اختيار الصور من المعرض أو الكاميرا
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == android.app.Activity.RESULT_OK && result.getData() != null) {
                 processPrescriptionImage(result.getData().getData());
@@ -90,15 +90,16 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        // Init Firebase
+        // تهيئة خدمات Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        // UI Binding
+        // ربط عناصر واجهة المستخدم
         llNearbyList = view.findViewById(R.id.ll_nearby_pharmacies_list);
         tvNearbyLabel = view.findViewById(R.id.tv_nearby_label);
         etSearch = view.findViewById(R.id.et_search);
 
+        // إعداد مستمع للبحث عند الضغط على زر البحث في لوحة المفاتيح
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 performSearch();
@@ -107,9 +108,10 @@ public class HomeFragment extends Fragment {
             return false;
         });
 
+        // إعداد مستمع لأيقونة البحث
         view.findViewById(R.id.iv_search_icon).setOnClickListener(v -> performSearch());
 
-        // Welcome Message Logic
+        // منطق عرض رسالة الترحيب باسم المستخدم أو الصيدلية
         TextView tvWelcome = view.findViewById(R.id.tv_welcome);
         String intentName = getActivity().getIntent().getStringExtra("user_name");
         
@@ -122,7 +124,7 @@ public class HomeFragment extends Fragment {
                     String name = doc.getString("fullName");
                     tvWelcome.setText(getString(R.string.welcome_back, (name != null ? name : "User")));
                 } else {
-                    // Check if it's a pharmacy user
+                    // التحقق مما إذا كان المستخدم صيدلية
                     db.collection("Pharmacies").document(uid).get().addOnSuccessListener(phDoc -> {
                         if (phDoc.exists()) {
                             tvWelcome.setText(getString(R.string.welcome_back, phDoc.getString("pharmacyName")));
@@ -132,7 +134,7 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        // Click Listeners
+        // إعداد مستمعات النقرات للأزرار المختلفة في الشاشة الرئيسية
         view.findViewById(R.id.ll_scan_prescription).setOnClickListener(v -> showImagePickerDialog());
 
         view.findViewById(R.id.ll_nearby_pharmacies).setOnClickListener(v -> {
@@ -143,6 +145,7 @@ public class HomeFragment extends Fragment {
             startActivity(new Intent(getContext(), FavoritesActivity.class));
         });
 
+        // عرض كافة الصيدليات القريبة أو نتائج البحث عن وصفة طبية
         view.findViewById(R.id.tv_view_all_nearby).setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), NearbyPharmaciesActivity.class);
             String query = etSearch.getText().toString().trim();
@@ -168,11 +171,13 @@ public class HomeFragment extends Fragment {
             tvRequest.setOnClickListener(v -> showRequestMedicineDialog());
         }
 
+        // التحقق من أذونات الموقع الجغرافي
         checkLocationPermission();
 
         return view;
     }
 
+    // التحقق من الحصول على إذن الوصول للموقع
     private void checkLocationPermission() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
@@ -181,6 +186,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // الحصول على الإحداثيات الحالية للمستخدم
     private void getCurrentLocation() {
         LocationManager lm = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         try {
@@ -193,15 +199,16 @@ public class HomeFragment extends Fragment {
                 userLocation = loc;
                 Log.d(TAG, "Location found: " + loc.getLatitude() + ", " + loc.getLongitude());
             }
-            loadPharmacies(); // Initial load
+            loadPharmacies(); // تحميل الصيدليات القريبة بناءً على الموقع
         } catch (SecurityException e) {
             Log.e(TAG, "Location permission error", e);
         }
     }
 
+    // معالجة عملية البحث اليدوي
     private void performSearch() {
         String query = etSearch.getText().toString().trim();
-        lastMedsFound = null; // Reset prescription search when manual search is done
+        lastMedsFound = null; // إعادة تعيين نتائج الوصفة عند إجراء بحث يدوي
         if (!query.isEmpty()) {
             Log.d(TAG, "Searching for: " + query);
             searchMedicine(query);
@@ -210,20 +217,21 @@ public class HomeFragment extends Fragment {
             loadPharmacies();
         }
         
-        // Hide keyboard
+        // إخفاء لوحة المفاتيح
         etSearch.clearFocus();
         android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) imm.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
     }
 
+    // البحث عن دواء معين في قاعدة البيانات Firestore
     private void searchMedicine(String query) {
         String lowerCaseQuery = query.toLowerCase();
-        // Capitalize first letter for Firestore search
+        // تحويل الحرف الأول لكبير للبحث المتوافق
         String capitalized = query.substring(0, 1).toUpperCase() + (query.length() > 1 ? query.substring(1).toLowerCase() : "");
 
         tvNearbyLabel.setText(getString(R.string.search_results) + query);
         
-        // Search both variations to be safe
+        // البحث عن الدواء بأسماء تبدأ بالحروف المدخلة (صغيرة وكبيرة)
         Task<com.google.firebase.firestore.QuerySnapshot> task1 = db.collectionGroup("Inventory")
                 .whereGreaterThanOrEqualTo("name", lowerCaseQuery)
                 .whereLessThanOrEqualTo("name", lowerCaseQuery + "\uf8ff")
@@ -239,7 +247,7 @@ public class HomeFragment extends Fragment {
             for (Object res : results) {
                 com.google.firebase.firestore.QuerySnapshot snapshots = (com.google.firebase.firestore.QuerySnapshot) res;
                 for (QueryDocumentSnapshot doc : snapshots) {
-                    // Inventory is a sub-collection: Pharmacies/{phId}/Inventory/{medId}
+                    // الحصول على معرف الصيدلية المالكة لهذا الدواء
                     if (doc.getReference().getParent().getParent() != null) {
                         String phId = doc.getReference().getParent().getParent().getId();
                         if (!foundPhIds.contains(phId)) foundPhIds.add(phId);
@@ -261,6 +269,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // حفظ سجل عمليات البحث للمستخدم
     private void saveSearchHistory(String query, int resultCount) {
         if (mAuth.getCurrentUser() == null) return;
         Map<String, Object> data = new java.util.HashMap<>();
@@ -272,6 +281,7 @@ public class HomeFragment extends Fragment {
         db.collection("PatientHistory").add(data);
     }
 
+    // جلب تفاصيل الصيدليات بناءً على المعرفات المستخرجة من البحث
     private void fetchPharmacyDetails(List<String> ids) {
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
         for (String id : ids) {
@@ -287,12 +297,13 @@ public class HomeFragment extends Fragment {
                     if (model != null) list.add(model);
                 }
             }
-            // Sort by distance
+            // ترتيب الصيدليات حسب المسافة
             Collections.sort(list, (p1, p2) -> Float.compare(p1.distance, p2.distance));
             updateUIList(list);
         });
     }
 
+    // تحميل كافة الصيدليات المسجلة (الحالة الافتراضية)
     private void loadPharmacies() {
         db.collection("Pharmacies").get().addOnSuccessListener(queryDocumentSnapshots -> {
             List<PharmacyModel> list = new ArrayList<>();
@@ -305,6 +316,7 @@ public class HomeFragment extends Fragment {
         }).addOnFailureListener(e -> Log.e(TAG, "Load pharmacies failed", e));
     }
 
+    // تحويل وثيقة الصيدلية إلى كائن برمجي وحساب المسافة عن المستخدم
     private PharmacyModel mapDocToPharmacy(DocumentSnapshot doc) {
         try {
             String name = doc.getString("pharmacyName");
@@ -320,7 +332,7 @@ public class HomeFragment extends Fragment {
             if (userLocation != null) {
                 float[] res = new float[1];
                 Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), lat, lon, res);
-                dist = res[0] / 1000f;
+                dist = res[0] / 1000f; // التحويل للكيلومترات
             }
 
             return new PharmacyModel(
@@ -333,6 +345,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // عرض رسالة عند عدم وجود نتائج بحث
     private void showEmptyResults(String msg) {
         llNearbyList.removeAllViews();
         TextView tv = new TextView(getContext());
@@ -342,6 +355,7 @@ public class HomeFragment extends Fragment {
         llNearbyList.addView(tv);
     }
 
+    // التحقق مما إذا كانت الصيدلية مفتوحة الآن بناءً على ساعات العمل
     private boolean checkIfOpen(Map<String, Object> hours) {
         if (hours == null) return false;
         if (Boolean.TRUE.equals(hours.get("open247"))) return true;
@@ -371,7 +385,7 @@ public class HomeFragment extends Fragment {
             int openMins = parseTime(open);
             int closeMins = parseTime(close);
 
-            if (closeMins < openMins) { // Overnight shift
+            if (closeMins < openMins) { // حالة الدوام الليلي (بعد منتصف الليل)
                 return currentTimeMinutes >= openMins || currentTimeMinutes <= closeMins;
             } else {
                 return currentTimeMinutes >= openMins && currentTimeMinutes <= closeMins;
@@ -381,17 +395,19 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // تحويل الوقت من نص إلى دقائق
     private int parseTime(String time) {
         String[] p = time.split(":");
         return Integer.parseInt(p[0]) * 60 + Integer.parseInt(p[1]);
     }
 
+    // تحديث قائمة الصيدليات المعروضة في الواجهة
     private void updateUIList(List<PharmacyModel> list) {
         if (getContext() == null) return;
         llNearbyList.removeAllViews();
         
         LayoutInflater inflater = LayoutInflater.from(getContext());
-        int limit = 3; // Show only top 3 on home
+        int limit = 3; // إظهار أفضل 3 صيدليات فقط على الشاشة الرئيسية
         
         for (int i = 0; i < Math.min(list.size(), limit); i++) {
             PharmacyModel ph = list.get(i);
@@ -408,6 +424,7 @@ public class HomeFragment extends Fragment {
             tvAddr.setText(ph.address != null ? ph.address : "No address info");
             tvDist.setText(String.format(Locale.getDefault(), "%.1f km", ph.distance));
 
+            // تحديد الحالة (مفتوح، مغلق، أو عدد الأدوية المتطابقة مع الوصفة)
             if (ph.totalRequested > 0) {
                 String matchText = getString(R.string.matched) + " " + ph.matchedCount + "/" + ph.totalRequested;
                 tvStatus.setText(matchText);
@@ -431,21 +448,23 @@ public class HomeFragment extends Fragment {
                 tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFEBEE")));
             }
 
+            // تحميل صورة الصيدلية باستخدام Glide
             if (ph.photoUrl != null && !ph.photoUrl.isEmpty()) {
                 Glide.with(this).load(ph.photoUrl).placeholder(R.drawable.a_pharmacy).into(ivPhoto);
             } else {
                 ivPhoto.setImageResource(R.drawable.a_pharmacy);
             }
 
+            // فتح الملاحة عند الضغط على أيقونة التوجيه
             ivNav.setOnClickListener(v -> openNavigation(ph.latitude, ph.longitude));
 
+            // فتح تفاصيل الصيدلية عند الضغط على العنصر
             itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(getContext(), PharmacyDetailActivity.class);
                 intent.putExtra("PHARMACY_ID", ph.id);
                 intent.putExtra("PHARMACY_NAME", ph.name);
                 intent.putExtra("PHARMACY_LAT", ph.latitude);
                 intent.putExtra("PHARMACY_LON", ph.longitude);
-                // ... add other extras if needed
                 startActivity(intent);
             });
 
@@ -453,6 +472,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // فتح تطبيق الخرائط لبدء التوجيه نحو الصيدلية
     private void openNavigation(double lat, double lon) {
         Uri gmmIntentUri = Uri.parse("google.navigation:q=" + lat + "," + lon);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -460,12 +480,13 @@ public class HomeFragment extends Fragment {
         if (mapIntent.resolveActivity(getContext().getPackageManager()) != null) {
             startActivity(mapIntent);
         } else {
-            // Fallback to browser
+            // حل بديل عند عدم وجود تطبيق الخرائط
             String url = "https://www.google.com/maps/dir/?api=1&destination=" + lat + "," + lon;
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
         }
     }
 
+    // جلب وعرض الإشعارات الخاصة بالمستخدم
     private void showNotificationsDialog() {
         if (mAuth.getCurrentUser() == null) return;
         
@@ -480,14 +501,14 @@ public class HomeFragment extends Fragment {
                     }
 
                     List<DocumentSnapshot> list = results.getDocuments();
-                    // Sort descending by timestamp
+                    // ترتيب الإشعارات من الأحدث للأقدم
                     Collections.sort(list, (d1, d2) -> {
                         Long t1 = d1.getLong("timestamp");
                         Long t2 = d2.getLong("timestamp");
                         return Long.compare(t2 != null ? t2 : 0, t1 != null ? t1 : 0);
                     });
 
-                    // Build simple list dialog
+                    // إنشاء واجهة عرض الإشعارات داخل نافذة منبثقة
                     LinearLayout container = new LinearLayout(getContext());
                     container.setOrientation(LinearLayout.VERTICAL);
                     container.setPadding(20, 20, 20, 20);
@@ -517,6 +538,7 @@ public class HomeFragment extends Fragment {
                 });
     }
 
+    // إعداد التفاعلات الخاصة بالصيدلية داخل الإشعار (مثل التوجيه)
     private void setupPharmacyActionInNotif(View v, String phId) {
         db.collection("Pharmacies").document(phId).get().addOnSuccessListener(phDoc -> {
             if (phDoc.exists()) {
@@ -526,7 +548,7 @@ public class HomeFragment extends Fragment {
 
                 llActions.setVisibility(View.VISIBLE);
 
-                // Check open/closed status
+                // عرض حالة الصيدلية الحالية في الإشعار
                 Map<String, Object> hours = (Map<String, Object>) phDoc.get("workingHours");
                 boolean isOpen = checkIfOpen(hours);
                 if (isOpen) {
@@ -537,7 +559,7 @@ public class HomeFragment extends Fragment {
                     tvStatus.setTextColor(Color.parseColor("#F44336"));
                 }
 
-                // Setup directions button
+                // إعداد زر التوجيه
                 Double lat = phDoc.getDouble("latitude");
                 Double lon = phDoc.getDouble("longitude");
                 if (lat != null && lon != null) {
@@ -549,6 +571,7 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // عرض نافذة لطلب دواء غير متوفر لإخطار الصيدليات
     private void showRequestMedicineDialog() {
         EditText et = new EditText(getContext());
         et.setHint("e.g. Panadol 500mg");
@@ -565,6 +588,7 @@ public class HomeFragment extends Fragment {
                 .show();
     }
 
+    // حفظ طلب الدواء في Firestore
     private void saveRequest(String name) {
         if (mAuth.getCurrentUser() == null) return;
 
@@ -579,6 +603,7 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getContext(), R.string.request_sent, Toast.LENGTH_SHORT).show());
     }
 
+    // عرض خيارات اختيار صورة الوصفة (كاميرا أو معرض)
     private void showImagePickerDialog() {
         String[] options = {getString(R.string.take_photo), getString(R.string.choose_gallery)};
         new androidx.appcompat.app.AlertDialog.Builder(getContext())
@@ -589,11 +614,13 @@ public class HomeFragment extends Fragment {
                 }).show();
     }
 
+    // فتح معرض الصور
     private void openGallery() {
         Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(i);
     }
 
+    // فتح الكاميرا لالتقاط صورة الوصفة
     private void openCamera() {
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -610,6 +637,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // معالجة صورة الوصفة واستخراج النصوص منها باستخدام ML Kit
     private void processPrescriptionImage(Uri uri) {
         try {
             InputImage image = InputImage.fromFilePath(getContext(), uri);
@@ -619,11 +647,13 @@ public class HomeFragment extends Fragment {
             
             recognizer.process(image)
                     .addOnSuccessListener(visionText -> {
+                        // استخراج أسماء الأدوية من النص
                         List<MedicineInfo> meds = extractMeds(visionText);
                         if (meds.isEmpty()) {
                             savePrescriptionHistory(uri, new ArrayList<>(), 0);
                             Toast.makeText(getContext(), R.string.ocr_no_meds, Toast.LENGTH_LONG).show();
                         } else {
+                            // عرض الأدوية المستخرجة للمستخدم للتأكيد
                             showMedicationSelectionDialog(meds, uri);
                         }
                     })
@@ -636,6 +666,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // نافذة لتأكيد الأدوية التي تم التعرف عليها بواسطة الذكاء الاصطناعي
     private void showMedicationSelectionDialog(List<MedicineInfo> meds, Uri uri) {
         if (getContext() == null) return;
 
@@ -643,7 +674,7 @@ public class HomeFragment extends Fragment {
         boolean[] checkedItems = new boolean[meds.size()];
         for (int i = 0; i < meds.size(); i++) {
             medStrings[i] = meds.get(i).name + (meds.get(i).strength.isEmpty() ? "" : " " + meds.get(i).strength);
-            checkedItems[i] = true; // Default all to checked
+            checkedItems[i] = true; // اختيار الكل افتراضياً
         }
 
         new androidx.appcompat.app.AlertDialog.Builder(getContext())
@@ -669,9 +700,10 @@ public class HomeFragment extends Fragment {
                 .show();
     }
 
+    // منطق استخراج أسماء الأدوية وفلترة الكلمات غير الضرورية من الوصفة
     private List<MedicineInfo> extractMeds(Text visionText) {
         List<MedicineInfo> list = new ArrayList<>();
-        // Expanded ignore list for better filtering
+        // قائمة الكلمات التي يجب تجاهلها (معلومات المريض والطبيب)
         String[] ignoreList = {
                 "patient", "name", "age", "sex", "gender", "date", "address", "doctor", "dr.", 
                 "hospital", "clinic", "diagnosis", "tel", "phone", "mobile", "weight", "height", 
@@ -688,7 +720,7 @@ public class HomeFragment extends Fragment {
                 
                 if (txt.length() < 3) continue;
                 
-                // Better filtering: if the line starts with a common non-med keyword
+                // تخطي الأسطر التي تبدأ بكلمات التجاهل
                 boolean skip = false;
                 for (String ignore : ignoreList) {
                     if (txt.startsWith(ignore) || txt.equals(ignore)) {
@@ -698,16 +730,15 @@ public class HomeFragment extends Fragment {
                 }
                 if (skip) continue;
 
-                // Ignore lines that are mostly numbers (like phone numbers or dates)
+                // تجاهل الأسطر التي يغلب عليها الأرقام (مثل أرقام الهواتف أو التواريخ)
                 if (txt.replaceAll("[^0-9]", "").length() > txt.replaceAll("[0-9]", "").length() && !txt.matches(".*[a-zA-Z]{3,}.*")) {
                     continue;
                 }
                 
-                // Clean common prefixes
+                // تنظيف البوادئ الشائعة مثل Rx
                 String cleanedTxt = originalTxt.replaceAll("^(?i)(rx|med|medicine)[:\\s]*", "").trim();
 
-                // Advanced Regex: Captures name and strength/form
-                // Supports: "Panadol 500mg", "Amoxicillin 250 mg", "Zinnat 500", "Voltaren gel"
+                // استخدام Regex متقدم لاستخراج اسم الدواء وتركيزه (مثلاً Panadol 500mg)
                 java.util.regex.Matcher m = java.util.regex.Pattern.compile(
                         "(?i)^([a-z]{3,}(?:\\s+[a-z]+)*)\\s*(\\d+\\s*(?:mg|ml|g|mcg|unit|iu|%|tab|cap|pill)s?)?.*",
                         java.util.regex.Pattern.CASE_INSENSITIVE
@@ -717,7 +748,7 @@ public class HomeFragment extends Fragment {
                     String name = m.group(1).trim();
                     String strength = (m.group(2) != null) ? m.group(2).trim() : "";
                     
-                    // Further filter the extracted name against ignore list
+                    // فلترة إضافية للتأكد من أن الاسم المستخرج ليس كلمة تجاهل
                     boolean nameIsInvalid = false;
                     for (String ignore : ignoreList) {
                         if (name.toLowerCase().equals(ignore)) {
@@ -727,7 +758,7 @@ public class HomeFragment extends Fragment {
                     }
                     
                     if (!nameIsInvalid && name.length() >= 3) {
-                        // Check for duplicates
+                        // تجنب التكرار في القائمة
                         boolean exists = false;
                         for(MedicineInfo mi : list) {
                             if(mi.name.equalsIgnoreCase(name)) { exists = true; break; }
@@ -740,6 +771,7 @@ public class HomeFragment extends Fragment {
         return list;
     }
 
+    // البحث عن الصيدليات التي يتوفر لديها قائمة الأدوية المستخرجة من الوصفة
     private void searchPharmaciesForMeds(List<MedicineInfo> meds, Uri imageUri) {
         StringBuilder searchInfo = new StringBuilder("Searching for: ");
         for(MedicineInfo mi : meds) searchInfo.append(mi.name).append(" ").append(mi.strength).append(", ");
@@ -749,6 +781,7 @@ public class HomeFragment extends Fragment {
             List<Task<Void>> tasks = new ArrayList<>();
             List<PharmacyModel> results = new ArrayList<>();
 
+            // فحص مخزون كل صيدلية
             for (QueryDocumentSnapshot ph : phDocs) {
                 Task<Void> t = ph.getReference().collection("Inventory").get().continueWith(task -> {
                     if (!task.isSuccessful()) return null;
@@ -761,6 +794,7 @@ public class HomeFragment extends Fragment {
                             String dbName = item.getString("name");
                             if (dbName == null) continue;
                             
+                            // مطابقة الدواء المطلوب مع قاعدة البيانات
                             if (isMedicineMatch(required.name, dbName)) {
                                 found = true;
                                 break;
@@ -769,6 +803,7 @@ public class HomeFragment extends Fragment {
                         if (found) count++;
                     }
                     
+                    // إذا وجدت تطابق لواحد على الأقل من الأدوية، تضاف الصيدلية للنتائج
                     if (count > 0) {
                         PharmacyModel model = mapDocToPharmacy(ph);
                         if (model != null) {
@@ -782,6 +817,7 @@ public class HomeFragment extends Fragment {
                 tasks.add(t);
             }
 
+            // ترتيب النتائج بناءً على عدد الأدوية المتوفرة ثم المسافة
             Tasks.whenAllComplete(tasks).addOnSuccessListener(v -> {
                 savePrescriptionHistory(imageUri, meds, results.size());
                 if (results.isEmpty()) {
@@ -802,24 +838,25 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // منطق مطابقة أسماء الأدوية للتعامل مع الفوارق الطفيفة الناتجة عن الـ OCR
     private boolean isMedicineMatch(String req, String db) {
         if (req == null || db == null) return false;
         
-        // تنظيف النصوص: تحويل للصغير وحذف المسافات والرموز
+        // تنظيف النصوص وحذف الرموز والمسافات
         String r = req.toLowerCase().replaceAll("[^a-z0-9]", "");
         String d = db.toLowerCase().replaceAll("[^a-z0-9]", "");
         
         if (r.isEmpty() || d.isEmpty()) return false;
         
-        // 1. المطابقة المباشرة أو الاحتواء (مثل Panadol و Panadol Advance)
+        // المطابقة المباشرة أو الاحتواء
         if (r.contains(d) || d.contains(r)) return true;
         
-        // 2. خوارزمية Levenshtein للتعامل مع الأخطاء الإملائية البسيطة الناتجة عن الـ OCR
-        // نسمح بخطأ واحد لكل 4 أحرف (مثلاً خطأين في كلمة طولها 8 أحرف)
+        // استخدام خوارزمية Levenshtein للأخطاء الإملائية البسيطة
         int threshold = Math.max(1, Math.min(r.length(), d.length()) / 4);
         return getLevenshteinDistance(r, d) <= threshold;
     }
 
+    // حساب المسافة الإملائية (Levenshtein Distance)
     private int getLevenshteinDistance(String s1, String s2) {
         int[] prev = new int[s2.length() + 1];
         for (int j = 0; j <= s2.length(); j++) prev[j] = j;
@@ -835,6 +872,7 @@ public class HomeFragment extends Fragment {
         return prev[s2.length()];
     }
 
+    // حفظ سجل مسح الوصفات الطبية للمريض
     private void savePrescriptionHistory(Uri uri, List<MedicineInfo> meds, int resultCount) {
         if (mAuth.getCurrentUser() == null) return;
         
@@ -851,7 +889,7 @@ public class HomeFragment extends Fragment {
         db.collection("PatientHistory").add(data);
     }
 
-    // Helper classes
+    // كلاسات مساعدة لتمثيل البيانات
     private static class MedicineInfo {
         String name, strength;
         MedicineInfo(String n, String s) { name = n; strength = s; }
@@ -872,6 +910,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    // التعامل مع نتائج طلب أذونات المستخدم
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_LOCATION_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {

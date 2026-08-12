@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -30,24 +29,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 public class NearbyPharmaciesActivity extends AppCompatActivity {
-
     @Override
     protected void attachBaseContext(android.content.Context newBase) {
-        // تطبيق اللغة المختارة لضمان استمرارها في هذه الشاشة
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 
-    // كائن Firestore
+    // تعريف متغيرات Firestore، الواجهة، والموقع
     private FirebaseFirestore db;
-    // حاوية القائمة
     private LinearLayout llList;
-    // نص الحالة الفارغة
     private TextView tvEmpty;
-    // موقع المستخدم
     private Location userLocation;
 
+    // متغيرات لتخزين بيانات البحث والوصفة الطبية
     private String searchQuery;
     private ArrayList<String> medNames;
     private ArrayList<String> medStrengths;
@@ -57,14 +51,17 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_nearby_pharmacies);
 
+        // ربط عناصر واجهة المستخدم والحصول على نسخة Firestore
         db = FirebaseFirestore.getInstance();
         llList = findViewById(R.id.ll_pharmacies_list);
         tvEmpty = findViewById(R.id.tv_empty_pharmacies);
 
+        // استقبال بيانات البحث من الـ Intent (سواء بحث نصي أو وصفة)
         searchQuery = getIntent().getStringExtra("SEARCH_QUERY");
         medNames = getIntent().getStringArrayListExtra("MED_NAMES");
         medStrengths = getIntent().getStringArrayListExtra("MED_STRENGTHS");
 
+        // تحديث عنوان الشاشة بناءً على نوع البحث
         TextView tvTitle = findViewById(R.id.tv_title);
         if (searchQuery != null) {
             tvTitle.setText("Results for: " + searchQuery);
@@ -72,10 +69,13 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
             tvTitle.setText("Prescription Results");
         }
 
+        // العودة عند الضغط على زر الرجوع
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
 
+        // جلب موقع المستخدم الحالي لحساب المسافات
         getCurrentLocation();
         
+        // توجيه العملية حسب نوع البحث: نصي، وصفة، أو عرض كافة الصيدليات
         if (searchQuery != null) {
             performMedicineSearch(searchQuery);
         } else if (medNames != null) {
@@ -85,10 +85,12 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         }
     }
 
+    // إجراء بحث نصي عن دواء معين داخل كافة مخازن الصيدليات
     private void performMedicineSearch(String query) {
         String lowerCaseQuery = query.toLowerCase();
         String capitalized = query.substring(0, 1).toUpperCase() + (query.length() > 1 ? query.substring(1).toLowerCase() : "");
 
+        // البحث عن الدواء بأسماء تبدأ بالحروف المدخلة (صغيرة وكبيرة)
         com.google.android.gms.tasks.Task<com.google.firebase.firestore.QuerySnapshot> t1 = db.collectionGroup("Inventory")
                 .whereGreaterThanOrEqualTo("name", lowerCaseQuery)
                 .whereLessThanOrEqualTo("name", lowerCaseQuery + "\uf8ff")
@@ -99,6 +101,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                 .whereLessThanOrEqualTo("name", capitalized + "\uf8ff")
                 .get();
 
+        // دمج نتائج البحث وجلب بيانات الصيدليات التي يتوفر لديها الدواء
         com.google.android.gms.tasks.Tasks.whenAllSuccess(t1, t2).addOnSuccessListener(results -> {
             List<String> foundIds = new ArrayList<>();
             for (Object res : results) {
@@ -113,11 +116,13 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         });
     }
 
+    // إجراء بحث بناءً على قائمة أدوية في وصفة طبية
     private void performPrescriptionSearch(List<String> names, List<String> strengths) {
         db.collection("Pharmacies").get().addOnSuccessListener(phDocs -> {
             List<com.google.android.gms.tasks.Task<Void>> tasks = new ArrayList<>();
             List<PharmacyModel> results = new ArrayList<>();
 
+            // فحص مخزون كل صيدلية لمطابقته مع الوصفة
             for (QueryDocumentSnapshot ph : phDocs) {
                 tasks.add(ph.getReference().collection("Inventory").get().continueWith(task -> {
                     if (!task.isSuccessful()) return null;
@@ -133,6 +138,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                             }
                         }
                     }
+                    // إذا وجدت تطابقات، أضف الصيدلية إلى النتائج
                     if (count > 0) {
                         PharmacyModel m = mapDocToPharmacy(ph);
                         if (m != null) {
@@ -144,6 +150,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                     return null;
                 }));
             }
+            // ترتيب النتائج حسب عدد الأدوية المتوفرة ثم المسافة
             com.google.android.gms.tasks.Tasks.whenAllComplete(tasks).addOnSuccessListener(v -> {
                 Collections.sort(results, (p1, p2) -> {
                     if (p1.matchedCount != p2.matchedCount) return Integer.compare(p2.matchedCount, p1.matchedCount);
@@ -154,6 +161,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         });
     }
 
+    // جلب بيانات صيدليات محددة بواسطة معرفاتها (بعد فلترة البحث)
     private void fetchSpecificPharmacies(List<String> ids, int matched, int total) {
         List<com.google.android.gms.tasks.Task<DocumentSnapshot>> tasks = new ArrayList<>();
         for (String id : ids) tasks.add(db.collection("Pharmacies").document(id).get());
@@ -169,11 +177,13 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                     list.add(m);
                 }
             }
+            // الترتيب حسب المسافة
             Collections.sort(list, (p1, p2) -> Float.compare(p1.distance, p2.distance));
             renderList(list);
         });
     }
 
+    // تحويل وثيقة Firestore إلى كائن PharmacyModel وحساب المسافة
     private PharmacyModel mapDocToPharmacy(DocumentSnapshot doc) {
         if (!doc.exists()) return null;
         String name = doc.getString("pharmacyName");
@@ -185,7 +195,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         if (userLocation != null) {
             float[] res = new float[1];
             Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), lat, lon, res);
-            dist = res[0] / 1000f;
+            dist = res[0] / 1000f; // التحويل إلى كيلومتر
         }
 
         return new PharmacyModel(name, doc.getString("address"), doc.getString("photoUrl"), dist,
@@ -193,6 +203,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                 doc.getString("phone"), doc.getString("description"), doc.getId());
     }
 
+    // فحص مدى تطابق اسم الدواء المطلوب مع الموجود في قاعدة البيانات (بما في ذلك الأخطاء الإملائية البسيطة)
     private boolean isMedicineMatch(String req, String db) {
         String r = req.toLowerCase().replaceAll("[^a-z0-9]", "");
         String d = db.toLowerCase().replaceAll("[^a-z0-9]", "");
@@ -201,6 +212,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         return getLevenshteinDistance(r, d) <= Math.max(1, Math.min(r.length(), d.length()) / 4);
     }
 
+    // خوارزمية Levenshtein لحساب المسافة بين كلمتين (للمطابقة التقريبية)
     private int getLevenshteinDistance(String s1, String s2) {
         int[] prev = new int[s2.length() + 1];
         for (int j = 0; j <= s2.length(); j++) prev[j] = j;
@@ -216,7 +228,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         return prev[s2.length()];
     }
 
-    // جلب موقع المستخدم الحالي
+    // الحصول على إحداثيات موقع المستخدم الحالي (GPS أو Network)
     private void getCurrentLocation() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -230,41 +242,23 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         }
     }
 
-    // جلب كافة الصيدليات من Firestore وحساب مسافاتها وترتيبها
+    // تحميل كافة الصيدليات من Firestore دون تصفية (الحالة الافتراضية)
     private void loadAllPharmacies() {
         db.collection("Pharmacies")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<PharmacyModel> list = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String name = doc.getString("pharmacyName");
-                        String address = doc.getString("address");
-                        String photoUrl = doc.getString("photoUrl");
-                        String phone = doc.getString("phone");
-                        String description = doc.getString("description");
-                        Double lat = doc.getDouble("latitude");
-                        Double lon = doc.getDouble("longitude");
-                        Map<String, Object> workingHours = (Map<String, Object>) doc.get("workingHours");
-
-                        float distance = 0;
-                        if (userLocation != null && lat != null && lon != null) {
-                            float[] results = new float[1];
-                            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), lat, lon, results);
-                            distance = results[0] / 1000f;
-                        }
-
-                        boolean isOpen = checkIfOpen(workingHours);
-                        list.add(new PharmacyModel(name, address, photoUrl, distance, isOpen, lat, lon, phone, description, doc.getId()));
+                        PharmacyModel m = mapDocToPharmacy(doc);
+                        if (m != null) list.add(m);
                     }
-
-                    // الترتيب حسب المسافة من الأقرب للأبعد
+                    // الترتيب حسب المسافة
                     Collections.sort(list, (p1, p2) -> Float.compare(p1.distance, p2.distance));
-
-                    renderList(list); // عرض القائمة النهائية
+                    renderList(list);
                 });
     }
 
-    // دالة عرض الصيدليات في الواجهة
+    // عرض قائمة الصيدليات في حاوية الواجهة (LinearLayout) بشكل ديناميكي
     private void renderList(List<PharmacyModel> list) {
         llList.removeAllViews();
         if (list.isEmpty()) {
@@ -288,6 +282,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
             tvAddress.setText(pharmacy.address != null ? pharmacy.address : "Address not available");
             tvDist.setText(String.format(Locale.getDefault(), "%.1f km", pharmacy.distance));
 
+            // عرض حالة التوفر (في حال البحث عن وصفة) أو حالة الفتح (مفتوح/مغلق)
             if (pharmacy.totalRequested > 0) {
                 String matchText = "Matched " + pharmacy.matchedCount + "/" + pharmacy.totalRequested;
                 tvStatus.setText(matchText);
@@ -311,13 +306,14 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                 tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFEBEE")));
             }
 
+            // تحميل صورة الصيدلية
             if (pharmacy.photoUrl != null && !pharmacy.photoUrl.isEmpty()) {
                 Glide.with(this).load(pharmacy.photoUrl).placeholder(R.drawable.a_pharmacy).into(ivPhoto);
             } else {
                 ivPhoto.setImageResource(R.drawable.a_pharmacy);
             }
 
-            // فتح تفاصيل الصيدلية عند الضغط
+            // فتح شاشة تفاصيل الصيدلية عند الضغط على العنصر
             itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(this, PharmacyDetailActivity.class);
                 intent.putExtra("PHARMACY_ID", pharmacy.id);
@@ -333,7 +329,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                 startActivity(intent);
             });
 
-            // فتح الملاحة
+            // زر الملاحة: فتح خرائط جوجل للوصول للصيدلية
             ivNav.setOnClickListener(v -> {
                 Uri gmmIntentUri = Uri.parse("google.navigation:q=" + pharmacy.latitude + "," + pharmacy.longitude);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -350,7 +346,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         }
     }
 
-    // دالة التحقق من ساعات العمل
+    // التحقق مما إذا كانت الصيدلية مفتوحة حالياً بناءً على ساعات العمل المخزنة
     private boolean checkIfOpen(Map<String, Object> hours) {
         if (hours == null) return false;
         if (Boolean.TRUE.equals(hours.get("open247"))) return true;
@@ -382,6 +378,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
             int openTotalMinutes = parseTimeToMinutes(openTime);
             int closeTotalMinutes = parseTimeToMinutes(closeTime);
             if (closeTotalMinutes < openTotalMinutes) {
+                // التعامل مع الدوام الذي ينتهي بعد منتصف الليل
                 return currentTimeInMinutes >= openTotalMinutes || currentTimeInMinutes <= closeTotalMinutes;
             } else {
                 return currentTimeInMinutes >= openTotalMinutes && currentTimeInMinutes <= closeTotalMinutes;
@@ -391,6 +388,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         }
     }
 
+    // تحويل الوقت من تنسيق HH:mm إلى إجمالي الدقائق
     private int parseTimeToMinutes(String time) {
         String[] parts = time.split(":");
         int h = Integer.parseInt(parts[0]);
@@ -398,7 +396,7 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         return h * 60 + m;
     }
 
-    // كلاس تمثيل بيانات الصيدلية
+    // كلاس داخلي لتمثيل بيانات الصيدلية المستخدمة في القائمة
     private static class PharmacyModel {
         String id, name, address, photoUrl, phone, description;
         float distance;

@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -27,9 +26,7 @@ import org.osmdroid.views.overlay.Marker;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class MapsActivity extends AppCompatActivity {
-
     @Override
     protected void attachBaseContext(android.content.Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
@@ -68,10 +65,6 @@ public class MapsActivity extends AppCompatActivity {
         map.setTileSource(TileSourceFactory.MAPNIK); // استخدام خرائط Mapnik الافتراضية
         map.setMultiTouchControls(true); // تفعيل اللمس المتعدد (الزووم بالأصابع)
         map.getController().setZoom(12.0); // مستوى التكبير الافتراضي
-
-        // تحديد نقطة البداية (الجزائر العاصمة كمثال افتراضي)
-        GeoPoint startPoint = new GeoPoint(36.7538, 3.0588);
-        map.getController().setCenter(startPoint);
 
         // زر العودة للشاشة السابقة
         ImageButton btnBack = findViewById(R.id.btn_back);
@@ -166,6 +159,10 @@ public class MapsActivity extends AppCompatActivity {
             userMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_green_pin));
             userMarker.setTitle(getString(R.string.my_position));
             map.getOverlays().add(userMarker);
+            
+            // تمركز الخريطة حول موقع المستخدم عند اكتشافه لأول مرة
+            map.getController().animateTo(myPoint);
+            map.getController().setZoom(15.0); // تكبير الخريطة لرؤية أفضل للمنطقة المحيطة
         }
         
         userMarker.setPosition(myPoint);

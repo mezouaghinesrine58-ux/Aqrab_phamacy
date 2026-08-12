@@ -5,7 +5,6 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
-    <!-- Custom Header -->
     <View
         android:id="@+id/header_bg"
         android:layout_width="match_parent"
@@ -54,7 +53,6 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Profile Placeholder -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -148,7 +146,6 @@
                     app:tint="#CCCCCC" />
             </LinearLayout>
 
-            <!-- Pharmacy Specific Settings (Initially hidden) -->
             <LinearLayout
                 android:id="@+id/ll_pharmacy_options"
                 android:layout_width="match_parent"

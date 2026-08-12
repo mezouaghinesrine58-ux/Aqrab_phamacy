@@ -94,7 +94,6 @@
                         android:textStyle="bold"
                         android:layout_marginBottom="8dp"/>
 
-                    <!-- Saturday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -107,7 +106,6 @@
                         <EditText android:id="@+id/et_sat_close" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="22:00" android:focusable="false" android:clickable="true" android:inputType="none" android:importantForAutofill="no" />
                     </LinearLayout>
 
-                    <!-- Sunday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -120,7 +118,6 @@
                         <EditText android:id="@+id/et_sun_close" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="22:00" android:focusable="false" android:clickable="true" android:inputType="none" android:importantForAutofill="no" />
                     </LinearLayout>
 
-                    <!-- Monday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -133,7 +130,6 @@
                         <EditText android:id="@+id/et_mon_close" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="22:00" android:focusable="false" android:clickable="true" android:inputType="none" android:importantForAutofill="no" />
                     </LinearLayout>
 
-                    <!-- Tuesday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -146,7 +142,6 @@
                         <EditText android:id="@+id/et_tue_close" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="22:00" android:focusable="false" android:clickable="true" android:inputType="none" android:importantForAutofill="no" />
                     </LinearLayout>
 
-                    <!-- Wednesday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -159,7 +154,6 @@
                         <EditText android:id="@+id/et_wed_close" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="22:00" android:focusable="false" android:clickable="true" android:inputType="none" android:importantForAutofill="no" />
                     </LinearLayout>
 
-                    <!-- Thursday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -172,7 +166,6 @@
                         <EditText android:id="@+id/et_thu_close" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:hint="22:00" android:focusable="false" android:clickable="true" android:inputType="none" android:importantForAutofill="no" />
                     </LinearLayout>
 
-                    <!-- Friday -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

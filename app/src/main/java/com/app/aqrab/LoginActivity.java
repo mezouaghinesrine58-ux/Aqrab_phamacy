@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.annotation.SuppressLint; 
 import android.app.Activity; 
 import android.content.Context;
@@ -36,7 +35,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider; 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
-
 public class LoginActivity extends AppCompatActivity {
 
     // كائن المصادقة من Firebase
@@ -48,14 +46,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // تطبيق اللغة المختارة
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // تعيين واجهة تسجيل الدخول
         setContentView(R.layout.activity_log_in);
 
         // تهيئة Firebase Auth

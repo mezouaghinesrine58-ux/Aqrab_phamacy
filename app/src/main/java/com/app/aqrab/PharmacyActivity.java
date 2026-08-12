@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -30,7 +29,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 public class PharmacyActivity extends AppCompatActivity {
 
     // نصوص لعرض إحصائيات المخزون
@@ -53,14 +51,11 @@ public class PharmacyActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // تطبيق اللغة المختارة عند بدء النشاط
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // تعيين واجهة الصيدلية
         setContentView(R.layout.activity_pharmacy);
 
         // تهيئة كائنات قاعدة البيانات والمصادقة من Firebase
@@ -81,8 +76,6 @@ public class PharmacyActivity extends AppCompatActivity {
             tvPharmacyName.setText(pharmacyName);
         }
     }
-
-    // دالة ربط عناصر XML بالكود البرمجي
     private void initViews() {
         // ربط نصوص الإحصائيات (الإجمالي، المتوفر، الناقص، منتهي الصلاحية)
         tvTotal = findViewById(R.id.tv_total_medicines);
@@ -258,14 +251,14 @@ public class PharmacyActivity extends AppCompatActivity {
             });
         }
 
-        // ميزة اليوم: زر عرض الكل للتنبيهات ينتقل لشاشة المخزون
+        //  زر عرض الكل للتنبيهات ينتقل لشاشة المخزون
         if (tvViewAllAlerts != null) {
             tvViewAllAlerts.setOnClickListener(v -> {
                 startActivity(new Intent(PharmacyActivity.this, StockActivity.class));
             });
         }
 
-        // ميزة اليوم: زر التصفية يفتح نافذة خيارات التصفية
+        //  زر التصفية يفتح نافذة خيارات التصفية
         if (llFilter != null) {
             llFilter.setOnClickListener(v -> showFilterDialog());
         }

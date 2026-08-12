@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +28,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 public class FavoritesActivity extends AppCompatActivity {
 
     // كائنات Firebase
@@ -44,14 +42,12 @@ public class FavoritesActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        // تطبيق اللغة
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // تعيين الواجهة
         setContentView(R.layout.activity_favorites);
 
         db = FirebaseFirestore.getInstance();

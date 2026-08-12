@@ -1,5 +1,4 @@
 package com.app.aqrab;
-
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -15,7 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
 public class AddMedicineActivity extends AppCompatActivity {
 
     @Override
@@ -36,7 +34,6 @@ public class AddMedicineActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // تعيين الواجهة
         setContentView(R.layout.activity_add_medicine);
 
         // تهيئة Firebase
