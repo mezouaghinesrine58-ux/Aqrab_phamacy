@@ -57,7 +57,7 @@ public class SettingsFragment extends Fragment {
     );
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView (@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_settings, container, false);
         // الحصول على الإعدادات المحفوظة محلياً
         prefs = getActivity().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
