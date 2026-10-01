@@ -21,60 +21,126 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="55dp"
+            android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             app:cardCornerRadius="35dp"
             app:cardElevation="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:paddingVertical="8dp">
 
-                <ImageView
-                    android:id="@+id/iv_home"
+                <!-- Home -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_home"
-                    app:tint="#2E5A44" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="4dp">
 
-                <ImageView
-                    android:id="@+id/iv_mail"
+                    <ImageView
+                        android:id="@+id/iv_home"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_home"
+                        app:tint="#2E5A44" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="home"
+                        android:textColor="#2E5A44"
+                        android:textSize="9sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Mail -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_mail"
-                    app:tint="#9E9E9E" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="4dp">
 
-                <ImageView
-                    android:id="@+id/iv_history_bottom"
+                    <ImageView
+                        android:id="@+id/iv_mail"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_mail"
+                        app:tint="#9E9E9E" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="chat"
+                        android:textColor="#9E9E9E"
+                        android:textSize="9sp" />
+                </LinearLayout>
+
+                <!-- History -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_history"
-                    app:tint="#9E9E9E" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="4dp">
 
-                <ImageView
-                    android:id="@+id/iv_settings_bottom"
+                    <ImageView
+                        android:id="@+id/iv_history_bottom"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_history"
+                        app:tint="#9E9E9E" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="history"
+                        android:textColor="#9E9E9E"
+                        android:textSize="9sp" />
+                </LinearLayout>
+
+                <!-- Settings -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_settings"
-                    app:tint="#9E9E9E" />
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="4dp">
+
+                    <ImageView
+                        android:id="@+id/iv_settings_bottom"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:padding="4dp"
+                        android:src="@drawable/ic_settings"
+                        app:tint="#9E9E9E" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="sitting"
+                        android:textColor="#9E9E9E"
+                        android:textSize="9sp" />
+                </LinearLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

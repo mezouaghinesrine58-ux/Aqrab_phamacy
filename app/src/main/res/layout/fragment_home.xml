@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="80dp"
+    android:paddingBottom="95dp"
     android:clipToPadding="false">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -112,7 +112,7 @@
                     android:gravity="center"
                     android:text="@string/scan_prescription"
                     android:textColor="#2E5A44"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -143,7 +143,7 @@
                     android:gravity="center"
                     android:text="@string/nearby_pharmacies"
                     android:textColor="#2E5A44"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -174,7 +174,7 @@
                     android:gravity="center"
                     android:text="@string/my_favorites"
                     android:textColor="#2E5A44"
-                    android:textSize="12sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
