@@ -203,16 +203,6 @@
                     app:tint="#9E9E9E" />
             </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/checkbox_terms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:buttonTint="#3A5A40"
-                android:text="@string/terms_agree"
-                android:textColor="#616161"
-                android:textSize="13sp" />
-
             <Button
                 android:id="@+id/btn_create_account"
                 android:layout_width="match_parent"

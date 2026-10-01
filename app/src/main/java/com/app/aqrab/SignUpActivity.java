@@ -11,7 +11,6 @@ import android.text.method.PasswordTransformationMethod;
 import android.text.style.UnderlineSpan; 
 import android.view.View; 
 import android.widget.Button; 
-import android.widget.CheckBox;
 import android.widget.EditText; 
 import android.widget.ImageButton;
 import android.widget.ImageView; 
@@ -103,7 +102,6 @@ public class SignUpActivity extends AppCompatActivity {
         EditText etEmail = findViewById(R.id.et_email);
         EditText etPhone = findViewById(R.id.et_phone);
         EditText etPassword = findViewById(R.id.et_password);
-        CheckBox cbTerms = findViewById(R.id.checkbox_terms);
         ImageView ivShowPassword = findViewById(R.id.iv_show_password);
         // تفعيل إمكانية إظهار كلمة السر
         setupPasswordVisibilityToggle(etPassword, ivShowPassword); 
@@ -144,11 +142,6 @@ public class SignUpActivity extends AppCompatActivity {
 
             if (!password.equals(confirmPassword)) {
                 Toast.makeText(this, R.string.passwords_dont_match, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (cbTerms != null && !cbTerms.isChecked()) {
-                Toast.makeText(this, R.string.agree_terms, Toast.LENGTH_SHORT).show();
                 return;
             }
 

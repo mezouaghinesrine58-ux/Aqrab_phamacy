@@ -74,7 +74,9 @@
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="4dp">
+            android:padding="4dp"
+            android:paddingBottom="80dp"
+            >
 
             <EditText
                 android:id="@+id/et_chat_input"

@@ -1,9 +1,13 @@
 package com.app.aqrab;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager2.widget.ViewPager2;
 public class PatientActivity extends AppCompatActivity {
 
@@ -25,6 +29,16 @@ public class PatientActivity extends AppCompatActivity {
         ivMail = findViewById(R.id.iv_mail);
         ivHistory = findViewById(R.id.iv_history_bottom);
         ivSettings = findViewById(R.id.iv_settings_bottom);
+
+        View bottomNav = findViewById(R.id.bottom_nav_container);
+        if (bottomNav != null) {
+            ViewCompat.setOnApplyWindowInsetsListener(bottomNav, (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+                int extraMargin = (int) (1 * getResources().getDisplayMetrics().density);
+                v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), systemBars.bottom + extraMargin);
+                return insets;
+            });
+        }
 
         // إعداد الـ Adapter للـ ViewPager2
         MainPagerAdapter adapter = new MainPagerAdapter(this);
