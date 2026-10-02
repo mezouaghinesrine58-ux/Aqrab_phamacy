@@ -7,8 +7,8 @@
 
     <LinearLayout
         android:id="@+id/ll_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_width="410dp"
+        android:layout_height="78dp"
         android:background="#2E5A44"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -19,6 +19,7 @@
             android:id="@+id/btn_back"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginTop="9dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/ic_arrow_back"
             app:tint="@color/white" />
@@ -28,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
             android:text="Nearby Pharmacies"
             android:textColor="@color/white"
             android:textSize="18sp"

@@ -185,6 +185,7 @@ public class LoginActivity extends AppCompatActivity {
                                             getSharedPreferences("AqrabPrefs", MODE_PRIVATE).edit()
                                                     .putString("user_role", "Pharmacy")
                                                     .putString("user_name", name)
+                                                    .putString("pharmacy_name", name)
                                                     .apply();
                                             
                                             Intent intent = new Intent(LoginActivity.this, PharmacyActivity.class);
@@ -196,6 +197,7 @@ public class LoginActivity extends AppCompatActivity {
                                             getSharedPreferences("AqrabPrefs", MODE_PRIVATE).edit()
                                                     .putString("user_role", "Pharmacy")
                                                     .putString("user_name", name)
+                                                    .putString("pharmacy_name", name)
                                                     .apply();
                                             Intent intent = new Intent(LoginActivity.this, PharmacyActivity.class);
                                             intent.putExtra("PHARMACY_NAME", name);

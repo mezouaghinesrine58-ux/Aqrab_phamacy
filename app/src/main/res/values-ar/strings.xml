@@ -95,7 +95,7 @@
     <string name="medicine_list">قائمة الأدوية</string>
     <string name="filter">تصفية</string>
     <string name="view_all">عرض الكل</string>
-    <string name="search_hint">ابحث عن دواء بالاسم أو الباركود...</string>
+    <string name="search_hint">ابحث عن دواء...</string>
     <string name="welcome_back">مرحباً بعودتك،\n%1$s! 💚</string>
     <string name="home_subtitle">يسعدنا انضمامك إلينا.\nابحث عن دوائك فوراً.</string>
     <string name="search_home_hint">ابحث عن دواء أو صيدلية...</string>
@@ -185,6 +185,7 @@
     <string name="found_ph_total">تم العثور على %1$d صيدليات</string>
 
     <!-- History -->
+    <string name="medicine_details_title">تفاصيل الدواء</string>
     <string name="medicine_request_title">طلب دواء</string>
     <string name="stock_request_type">النوع: طلب مخزون</string>
     <string name="search_history_title">البحث: %1$s</string>
@@ -200,4 +201,17 @@
     <string name="upload_failed">فشل الرفع: %1$s</string>
     <string name="account_deleted">تم حذف الحساب بنجاح</string>
     <string name="delete_reauth_error">خطأ: يرجى تسجيل الخروج وتسجيل الدخول مرة أخرى لحذف حسابك.</string>
+
+    <!-- Pharmacy Notifications -->
+    <string name="pharmacy_notifications">إشعارات الصيدلية</string>
+    <string name="no_notifications_present">لا توجد إشعارات جديدة بخصوص الصلاحية أو المخزون.</string>
+    <string name="expiring_3_months">تنبيه: متبقي 3 أشهر على الانتهاء</string>
+    <string name="expiring_1_month">تنبيه: متبقي شهر على الانتهاء</string>
+    <string name="expiring_2_weeks">تحذير: متبقي أسبوعان على الانتهاء</string>
+    <string name="expiring_1_week">تحذير هام: متبقي أسبوع واحد على الانتهاء!</string>
+    <string name="expired">منتهي الصلاحية!</string>
+    <string name="low_stock_10">تنبيه: المخزون 10 علب أو أقل</string>
+    <string name="critical_stock_3">تحذير حرج: المخزون 3 علب أو أقل!</string>
+    <string name="out_of_stock">نفاد المخزون!</string>
+    <string name="edit">تعديل</string>
 </resources>

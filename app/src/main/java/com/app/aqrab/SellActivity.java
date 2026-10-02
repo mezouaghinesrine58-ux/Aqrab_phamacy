@@ -147,6 +147,10 @@ public class SellActivity extends AppCompatActivity {
             
             int finalCurrentQty = currentQty;
             String sellingPrice = doc.getString("sellingPrice");
+
+            // عند الضغط على اسم الدواء تظهر التفاصيل
+            tvName.setOnClickListener(v -> MedicineDetailsDialog.show(SellActivity.this, doc));
+
             // عند الضغط على زر "بيع"، يتم عرض نافذة لتحديد الكمية
             btnSell.setOnClickListener(v -> showSellDialog(doc.getId(), doc.getString("name"), finalCurrentQty, sellingPrice));
 

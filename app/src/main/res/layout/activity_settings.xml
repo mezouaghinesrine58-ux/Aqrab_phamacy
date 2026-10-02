@@ -42,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="-20dp"
-        android:background="@drawable/card_bg"
+        android:background="@drawable/card_scan_bg"
         android:backgroundTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/header_bg">
@@ -144,40 +144,6 @@
                     android:src="@drawable/ic_arrow_back"
                     android:rotation="180"
                     app:tint="#CCCCCC" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_pharmacy_options"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone">
-
-                <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="8dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pharmacy_alerts"
-                    android:textColor="#2E5A44"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="12dp" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_low_stock"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/low_stock_notif"
-                    android:textColor="#333333" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switch_expiry"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:text="@string/expiry_alerts"
-                    android:textColor="#333333" />
             </LinearLayout>
 
             <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="16dp"/>

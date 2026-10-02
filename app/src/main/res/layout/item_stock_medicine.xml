@@ -69,5 +69,16 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
+        <ImageButton
+            android:id="@+id/btn_edit_medicine"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/edit"
+            android:padding="6dp"
+            android:src="@drawable/ic_edit"
+            app:tint="#2E5A44" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

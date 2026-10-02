@@ -41,6 +41,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:id="@+id/tv_title_add_medicine"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Add New Medicine"
@@ -54,7 +55,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:padding="8dp"
-                android:background="@drawable/card_bg"
+                android:background="@drawable/card_scan_bg"
                 android:backgroundTint="#FFFFFF"
                 android:elevation="2dp"
                 android:src="@drawable/ic_barcode"

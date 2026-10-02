@@ -46,7 +46,11 @@ public class MainActivity extends AppCompatActivity {
             } 
             // إذا كان صيدلية، توجه لواجهة الصيدلية
             else if ("Pharmacy".equals(savedRole)) {
+                String pName = prefs.getString("pharmacy_name", prefs.getString("user_name", ""));
                 Intent intent = new Intent(MainActivity.this, PharmacyActivity.class);
+                if (!pName.isEmpty()) {
+                    intent.putExtra("PHARMACY_NAME", pName);
+                }
                 startActivity(intent);
                 finish(); // إغلاق هذه الشاشة
                 return;

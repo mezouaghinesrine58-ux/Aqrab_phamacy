@@ -1,4 +1,5 @@
 package com.app.aqrab;
+
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,13 +8,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+
 public class AddMedicineActivity extends AppCompatActivity {
 
     @Override
@@ -25,11 +32,17 @@ public class AddMedicineActivity extends AppCompatActivity {
     private EditText etName, etBrand, etStrength, etQuantity, etPurchasePrice, etSellingPrice, etBatch, etManufactureDate, etExpiryDate;
     // قوائم الاختيار (الفئة، الشكل الدوائي، الوحدة، وقت التنبيه)
     private Spinner spinnerCategory, spinnerForm, spinnerUnit, spinnerAlert;
-    // زر الحفظ
+    // زر الحفظ والعنوان
     private Button btnSave;
+    private TextView tvTitle;
     // كائنات Firebase
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
+    // متغيّرات وضع التعديل
+    private boolean isEditMode = false;
+    private String editMedicineId;
+    private String editPharmacyId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +53,25 @@ public class AddMedicineActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
+        // فحص وضع التعديل من الـ Intent
+        isEditMode = getIntent().getBooleanExtra("is_edit_mode", false);
+        editMedicineId = getIntent().getStringExtra("medicine_id");
+        editPharmacyId = getIntent().getStringExtra("pharmacy_id");
+
         // تهيئة العناصر والوظائف
         initViews();
         setupSpinners();
         setupDatePickers();
 
-        // تفعيل زر الحفظ
+        if (isEditMode) {
+            if (tvTitle != null) {
+                tvTitle.setText(R.string.edit);
+            }
+            btnSave.setText(R.string.edit);
+            populateEditFields();
+        }
+
+        // تفعيل زر الحفظ / التحديث
         btnSave.setOnClickListener(v -> saveMedicine());
         
         // زر العودة
@@ -57,6 +83,7 @@ public class AddMedicineActivity extends AppCompatActivity {
 
     // ربط عناصر XML بالكود
     private void initViews() {
+        tvTitle = findViewById(R.id.tv_title_add_medicine);
         etName = findViewById(R.id.et_medicine_name);
         etBrand = findViewById(R.id.et_brand);
         etStrength = findViewById(R.id.et_strength);
@@ -73,6 +100,50 @@ public class AddMedicineActivity extends AppCompatActivity {
         spinnerAlert = findViewById(R.id.spinner_alert);
         
         btnSave = findViewById(R.id.btn_save_medicine);
+    }
+
+    private void populateEditFields() {
+        String name = getIntent().getStringExtra("name");
+        String brand = getIntent().getStringExtra("brand");
+        String category = getIntent().getStringExtra("category");
+        String strength = getIntent().getStringExtra("strength");
+        String form = getIntent().getStringExtra("form");
+        String quantity = getIntent().getStringExtra("quantity");
+        String unit = getIntent().getStringExtra("unit");
+        String purchasePrice = getIntent().getStringExtra("purchasePrice");
+        String sellingPrice = getIntent().getStringExtra("sellingPrice");
+        String batch = getIntent().getStringExtra("batchNumber");
+        String manufactureDate = getIntent().getStringExtra("manufactureDate");
+        String expiryDate = getIntent().getStringExtra("expiryDate");
+        String alertBefore = getIntent().getStringExtra("alertBefore");
+
+        if (name != null) etName.setText(name);
+        if (brand != null) etBrand.setText(brand);
+        if (strength != null) etStrength.setText(strength);
+        if (quantity != null) etQuantity.setText(quantity);
+        if (purchasePrice != null) etPurchasePrice.setText(purchasePrice);
+        if (sellingPrice != null) etSellingPrice.setText(sellingPrice);
+        if (batch != null) etBatch.setText(batch);
+        if (manufactureDate != null) etManufactureDate.setText(manufactureDate);
+        if (expiryDate != null) etExpiryDate.setText(expiryDate);
+
+        setSpinnerSelection(spinnerCategory, category);
+        setSpinnerSelection(spinnerForm, form);
+        setSpinnerSelection(spinnerUnit, unit);
+        setSpinnerSelection(spinnerAlert, alertBefore);
+    }
+
+    private void setSpinnerSelection(Spinner spinner, String value) {
+        if (spinner != null && value != null && spinner.getAdapter() != null) {
+            ArrayAdapter<?> adapter = (ArrayAdapter<?>) spinner.getAdapter();
+            for (int i = 0; i < adapter.getCount(); i++) {
+                Object item = adapter.getItem(i);
+                if (item != null && value.equalsIgnoreCase(item.toString())) {
+                    spinner.setSelection(i);
+                    break;
+                }
+            }
+        }
     }
 
     // إعداد مستمعي حقول التاريخ لفتح نافذة التقويم
@@ -95,7 +166,7 @@ public class AddMedicineActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
-    // دالة حفظ بيانات الدواء في قاعدة البيانات
+    // دالة حفظ/تحديث بيانات الدواء في قاعدة البيانات
     private void saveMedicine() {
         // جلب البيانات من الحقول
         String name = etName.getText().toString().trim();
@@ -146,6 +217,37 @@ public class AddMedicineActivity extends AppCompatActivity {
         medicine.put("expiryDate", expiryDate);
         medicine.put("alertBefore", spinnerAlert.getSelectedItem().toString());
         medicine.put("ownerId", userId);
+
+        if (isEditMode) {
+            btnSave.setEnabled(false);
+            btnSave.setText("Updating...");
+
+            if (editPharmacyId != null && !editPharmacyId.isEmpty()) {
+                updateMedicineInFirestore(editPharmacyId, editMedicineId, medicine);
+            } else {
+                db.collection("Pharmacies")
+                        .whereEqualTo("ownerId", userId)
+                        .limit(1)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            if (!queryDocumentSnapshots.isEmpty()) {
+                                String pharmacyDocId = queryDocumentSnapshots.getDocuments().get(0).getId();
+                                updateMedicineInFirestore(pharmacyDocId, editMedicineId, medicine);
+                            } else {
+                                btnSave.setEnabled(true);
+                                btnSave.setText(R.string.edit);
+                                Toast.makeText(this, "No matching Pharmacy found.", Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            btnSave.setEnabled(true);
+                            btnSave.setText(R.string.edit);
+                            Toast.makeText(this, "Database error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }
+            return;
+        }
+
         medicine.put("createdAt", System.currentTimeMillis());
 
         btnSave.setEnabled(false); // تعطيل الزر لمنع الإضافة المتكررة
@@ -187,6 +289,21 @@ public class AddMedicineActivity extends AppCompatActivity {
                     btnSave.setEnabled(true);
                     btnSave.setText("Save Medicine");
                     Toast.makeText(this, "Database error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void updateMedicineInFirestore(String phId, String medId, Map<String, Object> medicine) {
+        db.collection("Pharmacies").document(phId)
+                .collection("Inventory").document(medId)
+                .set(medicine, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(AddMedicineActivity.this, "Medicine updated successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    btnSave.setEnabled(true);
+                    btnSave.setText(R.string.edit);
+                    Toast.makeText(AddMedicineActivity.this, "Failed to update: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
     }
 

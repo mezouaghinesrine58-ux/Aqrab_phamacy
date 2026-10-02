@@ -41,6 +41,23 @@ public class WorkingHoursActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_working_hours);
+
+        getWindow().setStatusBarColor(android.graphics.Color.TRANSPARENT);
+        androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView()).setAppearanceLightStatusBars(false);
+
+        View mainView = findViewById(R.id.main_working_hours);
+        View toolbar = findViewById(R.id.ll_toolbar);
+        if (mainView != null) {
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
+                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom);
+                if (toolbar != null) {
+                    toolbar.setPadding(toolbar.getPaddingLeft(), systemBars.top, toolbar.getPaddingRight(), toolbar.getPaddingBottom());
+                }
+                return insets;
+            });
+        }
+
         // إنشاء مثيلات Firebase للتمكن من قراءة وكتابة البيانات
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -95,7 +112,7 @@ public class WorkingHoursActivity extends AppCompatActivity {
             TimePickerDialog mTimePicker;
             mTimePicker = new TimePickerDialog(WorkingHoursActivity.this, (timePicker, selectedHour, selectedMinute) -> 
                     // تعيين الوقت المختار داخل حقل النص بتنسيق (ساعة:دقيقة)
-                    et.setText(String.format("%02d:%02d", selectedHour, selectedMinute)), hour, minute, true);
+                    et.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)), hour, minute, true);
             mTimePicker.setTitle("Select Time"); // عنوان النافذة المنبثقة
             mTimePicker.show(); // عرض النافذة
         };

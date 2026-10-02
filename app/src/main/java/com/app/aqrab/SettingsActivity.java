@@ -1,33 +1,25 @@
 package com.app.aqrab;
+
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
 public class SettingsActivity extends AppCompatActivity {
 
-    // أزرار التبديل لإشعارات النقص وانتهاء الصلاحية
-    private SwitchCompat switchLowStock, switchExpiry;
-    // الإعدادات المحلية
-    private SharedPreferences prefs;
-    private static final String PREFS_NAME = "PharmacySettings";
-    // حاوية خيارات الصيدلية (تظهر للصيادلة فقط)
-    private LinearLayout llPharmacyOptions;
     // نصوص عرض بيانات المستخدم
     private TextView tvName, tvEmail;
     // صورة البروفايل
@@ -37,13 +29,12 @@ public class SettingsActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.onAttach(newBase));
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        // تهيئة الإعدادات المحلية
-        prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        // تهيئة العناصر، المستمعين، وتحميل بيانات المستخدم
+
         initViews();
         setupListeners();
         loadUserInfo();
@@ -52,19 +43,13 @@ public class SettingsActivity extends AppCompatActivity {
     // دالة ربط العناصر بالكود
     private void initViews() {
         ImageButton btnBack = findViewById(R.id.btn_back);
-        btnBack.setOnClickListener(v -> finish());
+        if (btnBack != null) {
+            btnBack.setOnClickListener(v -> finish());
+        }
 
-        switchLowStock = findViewById(R.id.switch_low_stock);
-        switchExpiry = findViewById(R.id.switch_expiry);
-        llPharmacyOptions = findViewById(R.id.ll_pharmacy_options);
-        
         tvName = findViewById(R.id.tv_user_name_settings);
         tvEmail = findViewById(R.id.tv_user_email_settings);
         ivProfile = findViewById(R.id.iv_user_profile_settings);
-
-        // تحميل الحالات المحفوظة لأزرار التنبيهات
-        switchLowStock.setChecked(prefs.getBoolean("low_stock_alerts", true));
-        switchExpiry.setChecked(prefs.getBoolean("expiry_alerts", true));
     }
 
     // جلب معلومات المستخدم وصورته من Firestore
@@ -72,38 +57,31 @@ public class SettingsActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        tvEmail.setText(user.getEmail()); // تعيين الإيميل
+        tvEmail.setText(user.getEmail());
         String uid = user.getUid();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        
-        // التحقق أولاً إذا كان المستخدم صيدلية
+
         db.collection("Pharmacies").document(uid).get().addOnSuccessListener(doc -> {
             if (doc.exists()) {
-                // إظهار خيارات التنبيهات الخاصة بالصيدلية
-                llPharmacyOptions.setVisibility(View.VISIBLE);
                 tvName.setText(doc.getString("pharmacyName"));
                 String photoUrl = doc.getString("photoUrl");
-                // تحميل صورة الصيدلية إذا وجدت
                 if (photoUrl != null && !photoUrl.isEmpty()) {
                     ivProfile.setPadding(0, 0, 0, 0);
                     ivProfile.setColorFilter(null);
                     Glide.with(this).load(photoUrl).circleCrop().into(ivProfile);
                 }
             } else {
-                // إذا لم يكن صيدلية، نتحقق من مجموعة المرضى (Users)
                 db.collection("Users").document(uid).get().addOnSuccessListener(docU -> {
                     if (docU.exists()) {
                         tvName.setText(docU.getString("fullName"));
                         String photoUrl = docU.getString("photoUrl");
-                        // تحميل صورة المريض
                         if (photoUrl != null && !photoUrl.isEmpty()) {
                             ivProfile.setPadding(0, 0, 0, 0);
                             ivProfile.setColorFilter(null);
                             Glide.with(this).load(photoUrl).circleCrop().into(ivProfile);
                         }
                     } else {
-                        // استخدام البيانات الافتراضية من حساب Firebase
                         tvName.setText(user.getDisplayName() != null ? user.getDisplayName() : "User");
                         if (user.getPhotoUrl() != null) {
                             ivProfile.setPadding(0, 0, 0, 0);
@@ -118,33 +96,17 @@ public class SettingsActivity extends AppCompatActivity {
 
     // إعداد مستمعي الأحداث للأزرار والخيارات
     private void setupListeners() {
-        // حفظ حالة تنبيهات المخزون المنخفض
-        switchLowStock.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            prefs.edit().putBoolean("low_stock_alerts", isChecked).apply();
-            Toast.makeText(this, isChecked ? R.string.low_stock_enabled : R.string.low_stock_disabled, Toast.LENGTH_SHORT).show();
-        });
-
-        // حفظ حالة تنبيهات تاريخ الانتهاء
-        switchExpiry.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            prefs.edit().putBoolean("expiry_alerts", isChecked).apply();
-            Toast.makeText(this, isChecked ? R.string.expiry_enabled : R.string.expiry_disabled, Toast.LENGTH_SHORT).show();
-        });
-
         // خيار تغيير لغة التطبيق
         findViewById(R.id.ll_change_language).setOnClickListener(v -> {
             String[] languages = {getString(R.string.language_english), "العربية", "Français"};
             String[] codes = {"en", "ar", "fr"};
-            
+
             new AlertDialog.Builder(this)
                     .setTitle(R.string.select_language)
                     .setItems(languages, (dialog, which) -> {
-                        // تعيين اللغة الجديدة
                         LocaleHelper.setLocale(this, codes[which]);
-                        
-                        // إبلاغ المستخدم بتغيير اللغة
                         Toast.makeText(this, getString(R.string.lang_changed, languages[which]), Toast.LENGTH_SHORT).show();
 
-                        // إعادة تشغيل التطبيق من الشاشة الرئيسية لتطبيق اللغة على كل شيء
                         Intent intent = new Intent(this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -163,14 +125,12 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
-        // خيار طلب حذف الحساب
+        // خيار طلب حذف الحساب مع نافذة التأكيد
         findViewById(R.id.ll_delete_account).setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.delete_account_title)
                     .setMessage(R.string.delete_account_msg)
-                    .setPositiveButton(R.string.delete_btn, (dialog, which) -> {
-                        Toast.makeText(this, "Account deletion requested", Toast.LENGTH_SHORT).show();
-                    })
+                    .setPositiveButton(R.string.delete_btn, (dialog, which) -> deleteAccount())
                     .setNegativeButton(R.string.cancel_btn, null)
                     .show();
         });
@@ -181,19 +141,50 @@ public class SettingsActivity extends AppCompatActivity {
                     .setTitle(R.string.logout_title)
                     .setMessage(R.string.logout_msg)
                     .setPositiveButton(R.string.nav_logout, (dialog, which) -> {
-                        // مسح نوع المستخدم المحفوظ محلياً
                         getSharedPreferences("AqrabPrefs", MODE_PRIVATE).edit().remove("user_role").apply();
-                        
-                        // تنفيذ تسجيل الخروج من Firebase
                         FirebaseAuth.getInstance().signOut();
-                        // العودة لشاشة البداية
                         Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                         finish();
                     })
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(R.string.cancel_btn, null)
                     .show();
         });
+    }
+
+    // دالة حذف حساب المستخدم وبياناته نهائياً
+    private void deleteAccount() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) return;
+
+        String uid = user.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        ProgressBar progressBar = findViewById(R.id.progress_bar_settings);
+        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+
+        // 1. حذف مستند المستخدم من Firestore (سواء مريض أو صيدلية)
+        db.collection("Users").document(uid).delete()
+                .addOnCompleteListener(task -> {
+                    db.collection("Pharmacies").document(uid).delete()
+                            .addOnCompleteListener(task2 -> {
+                                // 2. حذف الحساب برمجياً من نظام Firebase Authentication
+                                user.delete().addOnCompleteListener(task3 -> {
+                                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                                    if (task3.isSuccessful()) {
+                                        getSharedPreferences("AqrabPrefs", MODE_PRIVATE).edit().clear().apply();
+                                        Toast.makeText(SettingsActivity.this, R.string.account_deleted, Toast.LENGTH_LONG).show();
+
+                                        Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(SettingsActivity.this, R.string.delete_reauth_error, Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                            });
+                });
     }
 }

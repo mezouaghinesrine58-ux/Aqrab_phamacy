@@ -96,7 +96,7 @@
     <string name="medicine_list">Medicine List</string>
     <string name="filter">Filter</string>
     <string name="view_all">View all</string>
-    <string name="search_hint">Search medicine by name or barcode...</string>
+    <string name="search_hint">Search medicine...</string>
     <string name="welcome_back">Welcome back,\n%1$s! 💚</string>
     <string name="home_subtitle">We\'re glad to have you back.\nFind your medicine instantly.</string>
     <string name="search_home_hint">Search medicine or pharmacy...</string>
@@ -186,6 +186,7 @@
     <string name="found_ph_total">Found %1$d pharmacies</string>
 
     <!-- History -->
+    <string name="medicine_details_title">Medicine Details</string>
     <string name="medicine_request_title">Medicine Request</string>
     <string name="stock_request_type">Type: Stock Request</string>
     <string name="search_history_title">Search: %1$s</string>
@@ -201,4 +202,17 @@
     <string name="upload_failed">Upload failed: %1$s</string>
     <string name="account_deleted">Account deleted successfully</string>
     <string name="delete_reauth_error">Error: Please logout and login again to delete your account.</string>
+
+    <!-- Pharmacy Notifications -->
+    <string name="pharmacy_notifications">Pharmacy Notifications</string>
+    <string name="no_notifications_present">No new notifications for expiry or stock.</string>
+    <string name="expiring_3_months">Expiring in 3 Months</string>
+    <string name="expiring_1_month">Expiring in 1 Month</string>
+    <string name="expiring_2_weeks">Expiring in 2 Weeks</string>
+    <string name="expiring_1_week">Expiring in 1 Week!</string>
+    <string name="expired">Expired!</string>
+    <string name="low_stock_10">Low Stock (10 or less)</string>
+    <string name="critical_stock_3">Critical Low Stock (3 or less)!</string>
+    <string name="out_of_stock">Out of Stock!</string>
+    <string name="edit">Edit</string>
 </resources>

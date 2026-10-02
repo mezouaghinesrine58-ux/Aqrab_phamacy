@@ -92,7 +92,7 @@
     <string name="medicine_list">Liste des médicaments</string>
     <string name="filter">Filtrer</string>
     <string name="view_all">Voir tout</string>
-    <string name="search_hint">Rechercher par nom ou code-barres...</string>
+    <string name="search_hint">Rechercher un médicament...</string>
     <string name="welcome_back">Bon retour,\n%1$s! 💚</string>
     <string name="home_subtitle">Ravi de vous revoir.\nTrouvez votre médicament instantanément.</string>
     <string name="search_home_hint">Rechercher médicament ou pharmacie...</string>
@@ -182,6 +182,7 @@
     <string name="found_ph_total">%1$d pharmacies trouvées</string>
 
     <!-- History -->
+    <string name="medicine_details_title">Détails du médicament</string>
     <string name="medicine_request_title">Demande de médicament</string>
     <string name="stock_request_type">Type : Demande de stock</string>
     <string name="search_history_title">Recherche : %1$s</string>
@@ -197,4 +198,17 @@
     <string name="upload_failed">Échec du téléchargement : %1$s</string>
     <string name="account_deleted">Compte supprimé avec succès</string>
     <string name="delete_reauth_error">Erreur : Veuillez vous déconnecter et vous reconnecter pour supprimer votre compte.</string>
+
+    <!-- Pharmacy Notifications -->
+    <string name="pharmacy_notifications">Notifications de la pharmacie</string>
+    <string name="no_notifications_present">Aucune nouvelle notification pour la péremption ou le stock.</string>
+    <string name="expiring_3_months">Péremption dans 3 mois</string>
+    <string name="expiring_1_month">Péremption dans 1 mois</string>
+    <string name="expiring_2_weeks">Péremption dans 2 semaines</string>
+    <string name="expiring_1_week">Péremption dans 1 semaine!</string>
+    <string name="expired">Primé!</string>
+    <string name="low_stock_10">Stock faible (10 ou moins)</string>
+    <string name="critical_stock_3">Stock critique (3 ou moins)!</string>
+    <string name="out_of_stock">Rupture de stock!</string>
+    <string name="edit">Modifier</string>
 </resources>
