@@ -189,17 +189,21 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         String name = doc.getString("pharmacyName");
         Double lat = doc.getDouble("latitude");
         Double lon = doc.getDouble("longitude");
-        if (lat == null || lon == null) return null;
+        double latitude = lat != null ? lat : 0.0;
+        double longitude = lon != null ? lon : 0.0;
 
         float dist = 0;
-        if (userLocation != null) {
+        if (userLocation != null && lat != null && lon != null) {
             float[] res = new float[1];
-            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), lat, lon, res);
+            Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), latitude, longitude, res);
             dist = res[0] / 1000f; // التحويل إلى كيلومتر
         }
 
+        Map<String, Object> hours = (Map<String, Object>) doc.get("workingHours");
+        PharmacyStatus status = getPharmacyStatus(this, hours);
+
         return new PharmacyModel(name, doc.getString("address"), doc.getString("photoUrl"), dist,
-                checkIfOpen((Map<String, Object>) doc.get("workingHours")), lat, lon,
+                status.isOpen, status.statusText, latitude, longitude,
                 doc.getString("phone"), doc.getString("description"), doc.getId());
     }
 
@@ -296,14 +300,15 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
                     tvStatus.setTextColor(Color.parseColor("#F44336"));
                     tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFEBEE")));
                 }
-            } else if (pharmacy.isOpen) {
-                tvStatus.setText("Open Now");
-                tvStatus.setTextColor(Color.parseColor("#4CAF50"));
-                tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E8F5E9")));
             } else {
-                tvStatus.setText("Closed");
-                tvStatus.setTextColor(Color.parseColor("#F44336"));
-                tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFEBEE")));
+                tvStatus.setText(pharmacy.statusText);
+                if (pharmacy.isOpen) {
+                    tvStatus.setTextColor(Color.parseColor("#4CAF50"));
+                    tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E8F5E9")));
+                } else {
+                    tvStatus.setTextColor(Color.parseColor("#F44336"));
+                    tvStatus.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FFEBEE")));
+                }
             }
 
             // تحميل صورة الصيدلية
@@ -346,10 +351,49 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         }
     }
 
-    // التحقق مما إذا كانت الصيدلية مفتوحة حالياً بناءً على ساعات العمل المخزنة
-    private boolean checkIfOpen(Map<String, Object> hours) {
-        if (hours == null) return false;
-        if (Boolean.TRUE.equals(hours.get("open247"))) return true;
+    // تحويل الأرقام العربية إلى إنجليزية وتنظيف النص
+    private String normalizeDigits(String input) {
+        if (input == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (c >= '٠' && c <= '٩') {
+                sb.append((char) ('0' + (c - '٠')));
+            } else if (c >= '0' && c <= '9') {
+                sb.append(c);
+            } else if (c == ':' || c == ' ') {
+                sb.append(c);
+            }
+        }
+        return sb.toString().trim();
+    }
+
+    public static class PharmacyStatus {
+        public boolean isOpen;
+        public String statusText;
+
+        public PharmacyStatus(boolean isOpen, String statusText) {
+            this.isOpen = isOpen;
+            this.statusText = statusText;
+        }
+    }
+
+    // التحقق من حالة الفتح والإغلاق وساعات العمل
+    private PharmacyStatus getPharmacyStatus(Context context, Map<String, Object> hours) {
+        if (context == null) {
+            return new PharmacyStatus(true, "");
+        }
+        if (hours == null || hours.isEmpty()) {
+            return new PharmacyStatus(true, context.getString(R.string.open_24_7));
+        }
+
+        Object open247Obj = hours.get("open247");
+        if (open247Obj != null) {
+            if (Boolean.TRUE.equals(open247Obj)
+                    || "true".equalsIgnoreCase(String.valueOf(open247Obj))
+                    || "1".equals(String.valueOf(open247Obj))) {
+                return new PharmacyStatus(true, context.getString(R.string.open_24_7));
+            }
+        }
 
         Calendar now = Calendar.getInstance();
         int day = now.get(Calendar.DAY_OF_WEEK);
@@ -366,34 +410,106 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
             case Calendar.WEDNESDAY: openKey = "wed_open"; closeKey = "wed_close"; break;
             case Calendar.THURSDAY: openKey = "thu_open"; closeKey = "thu_close"; break;
             case Calendar.FRIDAY: openKey = "fri_open"; closeKey = "fri_close"; break;
-            default: return false;
+            default: openKey = ""; closeKey = ""; break;
         }
 
-        String openTime = (String) hours.get(openKey);
-        String closeTime = (String) hours.get(closeKey);
+        Object openObj = hours.get(openKey);
+        Object closeObj = hours.get(closeKey);
+        String openTime = openObj != null ? openObj.toString().trim() : "";
+        String closeTime = closeObj != null ? closeObj.toString().trim() : "";
 
-        if (openTime == null || closeTime == null || openTime.isEmpty() || closeTime.isEmpty()) return false;
+        if (openTime.isEmpty() || closeTime.isEmpty()) {
+            return new PharmacyStatus(false, context.getString(R.string.closed));
+        }
 
         try {
             int openTotalMinutes = parseTimeToMinutes(openTime);
             int closeTotalMinutes = parseTimeToMinutes(closeTime);
+            if (openTotalMinutes < 0 || closeTotalMinutes < 0) {
+                return new PharmacyStatus(false, context.getString(R.string.closed));
+            }
+            if (openTotalMinutes == closeTotalMinutes) {
+                return new PharmacyStatus(true, context.getString(R.string.open_24_7));
+            }
+
+            if (openTotalMinutes >= 6 * 60 && closeTotalMinutes < openTotalMinutes && closeTotalMinutes + 12 * 60 > openTotalMinutes) {
+                closeTotalMinutes += 12 * 60;
+            }
+
+            boolean isOpen;
             if (closeTotalMinutes < openTotalMinutes) {
-                // التعامل مع الدوام الذي ينتهي بعد منتصف الليل
-                return currentTimeInMinutes >= openTotalMinutes || currentTimeInMinutes <= closeTotalMinutes;
+                isOpen = currentTimeInMinutes >= openTotalMinutes || currentTimeInMinutes <= closeTotalMinutes;
             } else {
-                return currentTimeInMinutes >= openTotalMinutes && currentTimeInMinutes <= closeTotalMinutes;
+                isOpen = currentTimeInMinutes >= openTotalMinutes && currentTimeInMinutes <= closeTotalMinutes;
+            }
+
+            if (isOpen) {
+                String formattedClose = formatTimeForDisplay(closeTime, context);
+                return new PharmacyStatus(true, context.getString(R.string.open_until, formattedClose));
+            } else {
+                return new PharmacyStatus(false, context.getString(R.string.closed));
             }
         } catch (Exception e) {
-            return false;
+            return new PharmacyStatus(false, context.getString(R.string.closed));
         }
     }
 
-    // تحويل الوقت من تنسيق HH:mm إلى إجمالي الدقائق
+    // تحويل الوقت إلى إجمالي الدقائق مع دعم كافة التنسيقات والأرقام العربية
     private int parseTimeToMinutes(String time) {
-        String[] parts = time.split(":");
-        int h = Integer.parseInt(parts[0]);
-        int m = Integer.parseInt(parts[1]);
-        return h * 60 + m;
+        if (time == null || time.trim().isEmpty()) return -1;
+        String clean = normalizeDigits(time).toUpperCase();
+        boolean isPM = clean.contains("PM") || clean.contains("م");
+        boolean isAM = clean.contains("AM") || clean.contains("ص");
+        clean = clean.replaceAll("[^0-9:]", "").trim();
+        if (clean.isEmpty()) return -1;
+
+        try {
+            int h, m = 0;
+            if (clean.contains(":")) {
+                String[] parts = clean.split(":");
+                if (parts.length == 0) return -1;
+                h = Integer.parseInt(parts[0]);
+                if (parts.length > 1 && !parts[1].isEmpty()) {
+                    m = Integer.parseInt(parts[1]);
+                }
+            } else {
+                h = Integer.parseInt(clean);
+            }
+
+            if (isPM && h < 12) h += 12;
+            if (isAM && h == 12) h = 0;
+            return h * 60 + m;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    private String formatTimeForDisplay(String time, Context context) {
+        if (time == null || time.trim().isEmpty()) return "";
+        int mins = parseTimeToMinutes(time);
+        if (mins < 0) return time;
+
+        int h = mins / 60;
+        int m = mins % 60;
+
+        boolean isArabic = false;
+        if (context != null) {
+            try {
+                String lang = context.getResources().getConfiguration().locale.getLanguage();
+                if ("ar".equals(lang)) isArabic = true;
+            } catch (Exception ignored) {}
+        }
+
+        int h12 = h % 12;
+        if (h12 == 0) h12 = 12;
+
+        String amPm = (h >= 12) ? (isArabic ? "م" : "PM") : (isArabic ? "ص" : "AM");
+
+        if (m == 0) {
+            return String.format(Locale.getDefault(), "%d:00 %s", h12, amPm);
+        } else {
+            return String.format(Locale.getDefault(), "%d:%02d %s", h12, m, amPm);
+        }
     }
 
     // كلاس داخلي لتمثيل بيانات الصيدلية المستخدمة في القائمة
@@ -401,17 +517,19 @@ public class NearbyPharmaciesActivity extends AppCompatActivity {
         String id, name, address, photoUrl, phone, description;
         float distance;
         boolean isOpen;
+        String statusText;
         double latitude, longitude;
         int matchedCount = 0;
         int totalRequested = 0;
 
-        PharmacyModel(String name, String address, String photoUrl, float distance, boolean isOpen, double latitude, double longitude, String phone, String description, String id) {
+        PharmacyModel(String name, String address, String photoUrl, float distance, boolean isOpen, String statusText, double latitude, double longitude, String phone, String description, String id) {
             this.id = id;
             this.name = name;
             this.address = address;
             this.photoUrl = photoUrl;
             this.distance = distance;
             this.isOpen = isOpen;
+            this.statusText = statusText;
             this.latitude = latitude;
             this.longitude = longitude;
             this.phone = phone;

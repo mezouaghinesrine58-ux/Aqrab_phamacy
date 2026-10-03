@@ -36,7 +36,9 @@
                 android:text="Medicine Name"
                 android:textColor="#2E5A44"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end" />
 
             <TextView
                 android:id="@+id/tv_history_date"
@@ -53,7 +55,9 @@
                 android:layout_marginTop="2dp"
                 android:text="Qty: 1 | Price: 500 DA"
                 android:textColor="#616161"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
         </LinearLayout>
 
         <TextView

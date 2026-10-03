@@ -28,6 +28,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+
+import java.util.Locale;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
@@ -308,6 +310,23 @@ public class PharmacyDetailActivity extends AppCompatActivity {
                         String hoursStr = getTodayHours(workingHoursMap);
                         tvHoursSummary.setText(hoursStr); // عرض ساعات اليوم
                         
+                        // تحديث حالة الفتح/الإغلاق ديناميكياً
+                        if (workingHoursMap != null && !workingHoursMap.isEmpty()) {
+                            NearbyPharmaciesActivity.PharmacyStatus status = getPharmacyStatus(this, workingHoursMap);
+                            isOpen = status.isOpen;
+                            TextView tvStatus = findViewById(R.id.tv_detail_status);
+                            if (tvStatus != null) {
+                                tvStatus.setText(status.statusText);
+                                if (isOpen) {
+                                    tvStatus.setTextColor(android.graphics.Color.parseColor("#4CAF50"));
+                                    tvStatus.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E8F5E9")));
+                                } else {
+                                    tvStatus.setTextColor(android.graphics.Color.parseColor("#F44336"));
+                                    tvStatus.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#FFEBEE")));
+                                }
+                            }
+                        }
+
                         String dbAddress = documentSnapshot.getString("address");
                         if (dbAddress != null) {
                             TextView tvFullAddress = findViewById(R.id.tv_detail_full_address);
@@ -315,6 +334,158 @@ public class PharmacyDetailActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private NearbyPharmaciesActivity.PharmacyStatus getPharmacyStatus(Context context, Map<String, Object> hours) {
+        if (context == null) {
+            return new NearbyPharmaciesActivity.PharmacyStatus(true, "");
+        }
+        if (hours == null || hours.isEmpty()) {
+            return new NearbyPharmaciesActivity.PharmacyStatus(true, context.getString(R.string.open_24_7));
+        }
+
+        Object open247Obj = hours.get("open247");
+        if (open247Obj != null) {
+            if (Boolean.TRUE.equals(open247Obj)
+                    || "true".equalsIgnoreCase(String.valueOf(open247Obj))
+                    || "1".equals(String.valueOf(open247Obj))) {
+                return new NearbyPharmaciesActivity.PharmacyStatus(true, context.getString(R.string.open_24_7));
+            }
+        }
+
+        Calendar now = Calendar.getInstance();
+        int day = now.get(Calendar.DAY_OF_WEEK);
+        int currentHour = now.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = now.get(Calendar.MINUTE);
+        int currentTimeMinutes = currentHour * 60 + currentMinute;
+
+        String openKey, closeKey;
+        switch (day) {
+            case Calendar.SATURDAY: openKey = "sat_open"; closeKey = "sat_close"; break;
+            case Calendar.SUNDAY: openKey = "sun_open"; closeKey = "sun_close"; break;
+            case Calendar.MONDAY: openKey = "mon_open"; closeKey = "mon_close"; break;
+            case Calendar.TUESDAY: openKey = "tue_open"; closeKey = "tue_close"; break;
+            case Calendar.WEDNESDAY: openKey = "wed_open"; closeKey = "wed_close"; break;
+            case Calendar.THURSDAY: openKey = "thu_open"; closeKey = "thu_close"; break;
+            case Calendar.FRIDAY: openKey = "fri_open"; closeKey = "fri_close"; break;
+            default: openKey = ""; closeKey = ""; break;
+        }
+
+        Object openObj = hours.get(openKey);
+        Object closeObj = hours.get(closeKey);
+        String openTime = openObj != null ? openObj.toString().trim() : "";
+        String closeTime = closeObj != null ? closeObj.toString().trim() : "";
+
+        if (openTime.isEmpty() || closeTime.isEmpty()) {
+            return new NearbyPharmaciesActivity.PharmacyStatus(false, context.getString(R.string.closed));
+        }
+
+        try {
+            int openMins = parseTime(openTime);
+            int closeMins = parseTime(closeTime);
+            if (openMins < 0 || closeMins < 0) {
+                return new NearbyPharmaciesActivity.PharmacyStatus(false, context.getString(R.string.closed));
+            }
+            if (openMins == closeMins) {
+                return new NearbyPharmaciesActivity.PharmacyStatus(true, context.getString(R.string.open_24_7));
+            }
+
+            if (openMins >= 6 * 60 && closeMins < openMins && closeMins + 12 * 60 > openMins) {
+                closeMins += 12 * 60;
+            }
+
+            boolean isOpenStatus;
+            if (closeMins < openMins) {
+                isOpenStatus = currentTimeMinutes >= openMins || currentTimeMinutes <= closeMins;
+            } else {
+                isOpenStatus = currentTimeMinutes >= openMins && currentTimeMinutes <= closeMins;
+            }
+
+            if (isOpenStatus) {
+                String formattedClose = formatTimeForDisplay(closeTime, context);
+                return new NearbyPharmaciesActivity.PharmacyStatus(true, context.getString(R.string.open_until, formattedClose));
+            } else {
+                return new NearbyPharmaciesActivity.PharmacyStatus(false, context.getString(R.string.closed));
+            }
+        } catch (Exception e) {
+            return new NearbyPharmaciesActivity.PharmacyStatus(false, context.getString(R.string.closed));
+        }
+    }
+
+    private boolean checkIfOpen(Map<String, Object> hours) {
+        return getPharmacyStatus(this, hours).isOpen;
+    }
+
+    private String formatTimeForDisplay(String time, Context context) {
+        if (time == null || time.trim().isEmpty()) return "";
+        int mins = parseTime(time);
+        if (mins < 0) return time;
+
+        int h = mins / 60;
+        int m = mins % 60;
+
+        boolean isArabic = false;
+        if (context != null) {
+            try {
+                String lang = context.getResources().getConfiguration().locale.getLanguage();
+                if ("ar".equals(lang)) isArabic = true;
+            } catch (Exception ignored) {}
+        }
+
+        int h12 = h % 12;
+        if (h12 == 0) h12 = 12;
+
+        String amPm = (h >= 12) ? (isArabic ? "م" : "PM") : (isArabic ? "ص" : "AM");
+
+        if (m == 0) {
+            return String.format(Locale.getDefault(), "%d:00 %s", h12, amPm);
+        } else {
+            return String.format(Locale.getDefault(), "%d:%02d %s", h12, m, amPm);
+        }
+    }
+
+    private int parseTime(String time) {
+        if (time == null || time.trim().isEmpty()) return -1;
+        String clean = normalizeDigits(time).toUpperCase();
+        boolean isPM = clean.contains("PM") || clean.contains("م");
+        boolean isAM = clean.contains("AM") || clean.contains("ص");
+        clean = clean.replaceAll("[^0-9:]", "").trim();
+        if (clean.isEmpty()) return -1;
+
+        try {
+            int h, m = 0;
+            if (clean.contains(":")) {
+                String[] p = clean.split(":");
+                if (p.length == 0) return -1;
+                h = Integer.parseInt(p[0]);
+                if (p.length > 1 && !p[1].isEmpty()) {
+                    m = Integer.parseInt(p[1]);
+                }
+            } else {
+                h = Integer.parseInt(clean);
+            }
+
+            if (isPM && h < 12) h += 12;
+            if (isAM && h == 12) h = 0;
+            return h * 60 + m;
+        } catch (Exception e) {
+            return -1;
+        }
+    }
+
+    private String normalizeDigits(String input) {
+        if (input == null) return "";
+        StringBuilder sb = new StringBuilder();
+        for (char c : input.toCharArray()) {
+            if (c >= '٠' && c <= '٩') {
+                sb.append((char) ('0' + (c - '٠')));
+            } else if (c >= '0' && c <= '9') {
+                sb.append(c);
+            } else if (c == ':' || c == ' ') {
+                sb.append(c);
+            }
+        }
+        return sb.toString().trim();
     }
 
     // دالة استخراج ساعات العمل لليوم الحالي فقط
@@ -348,6 +519,7 @@ public class PharmacyDetailActivity extends AppCompatActivity {
 
     // ربط العناصر وتعيين البيانات الأولية والوظائف
     private void initViews() {
+        TextView tvToolbarTitle = findViewById(R.id.tv_toolbar_title);
         TextView tvName = findViewById(R.id.tv_detail_name);
         TextView tvStatus = findViewById(R.id.tv_detail_status);
         TextView tvDistance = findViewById(R.id.tv_detail_distance);
@@ -365,6 +537,9 @@ public class PharmacyDetailActivity extends AppCompatActivity {
         btnSubmitReview.setOnClickListener(v -> submitReview());
 
         // تعيين البيانات
+        if (tvToolbarTitle != null && name != null) {
+            tvToolbarTitle.setText(name);
+        }
         tvName.setText(name);
         tvDesc.setText(description != null && !description.isEmpty() ? description : getString(R.string.default_pharmacy_desc));
         tvDistance.setText(String.format(java.util.Locale.getDefault(), "%.1f km", distance));
@@ -413,6 +588,10 @@ public class PharmacyDetailActivity extends AppCompatActivity {
 
         // وظيفة زر المفضلة
         ivFavorite.setOnClickListener(v -> toggleFavorite());
+        View llActionFavorite = findViewById(R.id.ll_action_favorite);
+        if (llActionFavorite != null) {
+            llActionFavorite.setOnClickListener(v -> toggleFavorite());
+        }
 
         // زر الرجوع في التولبار
         Toolbar toolbar = findViewById(R.id.toolbar);

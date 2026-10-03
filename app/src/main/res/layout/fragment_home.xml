@@ -92,28 +92,27 @@
                 android:layout_marginEnd="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/card_scan_bg"
-                android:elevation="2dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="18dp"
+                android:padding="22dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:src="@drawable/ic_scan"
                     app:tint="#2E5A44" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="6dp"
                     android:gravity="center"
                     android:lines="2"
                     android:text="@string/scan_prescription"
                     android:textColor="#2E5A44"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -124,28 +123,27 @@
                 android:layout_marginHorizontal="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/card_map_bg"
-                android:elevation="2dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="18dp"
+                android:padding="22dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:src="@drawable/ic_location"
                     app:tint="#356B73" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="6dp"
                     android:gravity="center"
                     android:lines="2"
                     android:text="@string/nearby_pharmacies"
                     android:textColor="#356B73"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -156,28 +154,27 @@
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/card_fav_bg"
-                android:elevation="2dp"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="18dp"
+                android:padding="22dp"
                 android:clickable="true"
                 android:focusable="true">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:src="@drawable/ic_favorite"
                     app:tint="#B95353" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="6dp"
                     android:gravity="center"
                     android:lines="2"
                     android:text="@string/my_favorites"
                     android:textColor="#B95353"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
@@ -187,7 +184,7 @@
             android:id="@+id/tv_nearby_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="16dp"
             android:text="@string/feature_nearby"
             android:textColor="#2E5A44"
             android:textSize="18sp"

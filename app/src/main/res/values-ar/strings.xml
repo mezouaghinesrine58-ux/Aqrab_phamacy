@@ -107,6 +107,7 @@
     <string name="help_find_it">سنساعدك في العثور عليه.</string>
     <string name="request_medicine">طلب دواء</string>
     <string name="open_now">مفتوح الآن</string>
+    <string name="open_until">مفتوح حتى %1$s</string>
     <string name="closed">مغلق</string>
     <string name="matched">تم العثور على</string>
     <string name="reading_prescription">جاري قراءة الوصفة...</string>
@@ -181,6 +182,7 @@
     <string name="login_to_favorite">يرجى تسجيل الدخول لإضافة المفضلة</string>
     <string name="added_to_favorites">تمت الإضافة للمفضلة</string>
     <string name="removed_from_favorites">تم الحذف من المفضلة</string>
+    <string name="favorite">المفضلة</string>
     <string name="my_position">موقعي الحالي</string>
     <string name="found_ph_total">تم العثور على %1$d صيدليات</string>
 
@@ -191,10 +193,23 @@
     <string name="search_history_title">البحث: %1$s</string>
     <string name="found_ph_count_history">تم العثور على %1$d صيدليات</string>
     <string name="prescription_scan_title">مسح الوصفة</string>
+    <string name="prescription_scan_desc">تم مسح وصفة طبية (تم اكتشاف %1$d أدوية)</string>
     <string name="no_meds_detected">لم يتم اكتشاف أدوية</string>
     <string name="found_status">تم العثور</string>
     <string name="no_results_status">لا توجد نتائج</string>
     <string name="no_history_found">لا يوجد سجل</string>
+
+    <!-- History Details -->
+    <string name="history_details_title">تفاصيل السجل</string>
+    <string name="prescription_details_title">تفاصيل مسح الوصفة الطبية</string>
+    <string name="search_details_title">تفاصيل البحث</string>
+    <string name="request_details_title">تفاصيل طلب الدواء</string>
+    <string name="detected_medicines_label">الأدوية المكتشفة (%1$d)</string>
+    <string name="pharmacies_found_label">الصيدليات المكتشفة: %1$d</string>
+    <string name="search_query_label">عبارة البحث: %1$s</string>
+    <string name="requested_medicine_label">الدواء المطلوب: %1$s</string>
+    <string name="request_status_label">حالة الطلب: %1$s</string>
+    <string name="search_again">إعادة البحث</string>
 
     <!-- Settings Extra -->
     <string name="profile_updated">تم تحديث صورة الملف الشخصي!</string>

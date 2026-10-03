@@ -104,6 +104,7 @@
     <string name="help_find_it">Nous vous aiderons à le trouver.</string>
     <string name="request_medicine">Demander</string>
     <string name="open_now">Ouvert</string>
+    <string name="open_until">Ouvert jusqu\'à %1$s</string>
     <string name="closed">Fermé</string>
     <string name="matched">Trouvé</string>
     <string name="reading_prescription">Lecture de l\'ordonnance...</string>
@@ -178,6 +179,7 @@
     <string name="login_to_favorite">Veuillez vous connecter pour ajouter des favoris</string>
     <string name="added_to_favorites">Ajouté aux favoris</string>
     <string name="removed_from_favorites">Retiré des favoris</string>
+    <string name="favorite">Favori</string>
     <string name="my_position">Ma position</string>
     <string name="found_ph_total">%1$d pharmacies trouvées</string>
 
@@ -188,10 +190,23 @@
     <string name="search_history_title">Recherche : %1$s</string>
     <string name="found_ph_count_history">%1$d pharmacies trouvées</string>
     <string name="prescription_scan_title">Scan d\'ordonnance</string>
+    <string name="prescription_scan_desc">Scan d\'ordonnance (%1$d médicaments détectés)</string>
     <string name="no_meds_detected">Aucun médicament détecté</string>
     <string name="found_status">TROUVÉ</string>
     <string name="no_results_status">AUCUN RÉSULTAT</string>
     <string name="no_history_found">Aucun historique trouvé</string>
+
+    <!-- History Details -->
+    <string name="history_details_title">Détails de l\'historique</string>
+    <string name="prescription_details_title">Détails du scan d\'ordonnance</string>
+    <string name="search_details_title">Détails de la recherche</string>
+    <string name="request_details_title">Détails de la demande</string>
+    <string name="detected_medicines_label">Médicaments détectés (%1$d)</string>
+    <string name="pharmacies_found_label">Pharmacies trouvées : %1$d</string>
+    <string name="search_query_label">Terme de recherche : %1$s</string>
+    <string name="requested_medicine_label">Médicament demandé : %1$s</string>
+    <string name="request_status_label">Statut : %1$s</string>
+    <string name="search_again">Rechercher à nouveau</string>
 
     <!-- Settings Extra -->
     <string name="profile_updated">Photo de profil mise à jour !</string>

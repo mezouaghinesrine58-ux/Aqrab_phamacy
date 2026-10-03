@@ -25,7 +25,7 @@
     <string name="todo">TODO</string>
     <string name="or_continue_with">or continue with</string>
     <string name="already_have_an_account_log_in">Already have an account? Log in</string>
-    <string name="default_web_client_id">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</string>
+    <string name="default_web_client_id">983072934265-svbe4rlfv0j97dslmfuusbn6raqb4o7m.apps.googleusercontent.com</string>
     <string name="hello">Hello</string>
     <string name="chat_subtitle">How can I help you?</string>
     <string name="type_message">Type a message...</string>
@@ -108,6 +108,7 @@
     <string name="help_find_it">We\'ll help you find it.</string>
     <string name="request_medicine">Request medicine</string>
     <string name="open_now">Open Now</string>
+    <string name="open_until">Open until %1$s</string>
     <string name="closed">Closed</string>
     <string name="matched">Matched</string>
     <string name="reading_prescription">Reading prescription...</string>
@@ -182,6 +183,7 @@
     <string name="login_to_favorite">Please login to add favorites</string>
     <string name="added_to_favorites">Added to favorites</string>
     <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="favorite">Favorite</string>
     <string name="my_position">My Position</string>
     <string name="found_ph_total">Found %1$d pharmacies</string>
 
@@ -192,10 +194,23 @@
     <string name="search_history_title">Search: %1$s</string>
     <string name="found_ph_count_history">Found %1$d pharmacies</string>
     <string name="prescription_scan_title">Prescription Scan</string>
+    <string name="prescription_scan_desc">Scanned prescription (%1$d medicines detected)</string>
     <string name="no_meds_detected">No medicines detected</string>
     <string name="found_status">FOUND</string>
     <string name="no_results_status">NO RESULTS</string>
     <string name="no_history_found">No history found</string>
+
+    <!-- History Details -->
+    <string name="history_details_title">History Details</string>
+    <string name="prescription_details_title">Prescription Scan Details</string>
+    <string name="search_details_title">Search Details</string>
+    <string name="request_details_title">Medicine Request Details</string>
+    <string name="detected_medicines_label">Detected Medicines (%1$d)</string>
+    <string name="pharmacies_found_label">Pharmacies Found: %1$d</string>
+    <string name="search_query_label">Search Query: %1$s</string>
+    <string name="requested_medicine_label">Requested Medicine: %1$s</string>
+    <string name="request_status_label">Status: %1$s</string>
+    <string name="search_again">Search Again</string>
 
     <!-- Settings Extra -->
     <string name="profile_updated">Profile picture updated!</string>

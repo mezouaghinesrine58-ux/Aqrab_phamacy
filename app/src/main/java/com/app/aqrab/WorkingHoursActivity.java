@@ -111,8 +111,8 @@ public class WorkingHoursActivity extends AppCompatActivity {
             // إنشاء منتقي الوقت وتحديد الإجراء عند اختيار الوقت
             TimePickerDialog mTimePicker;
             mTimePicker = new TimePickerDialog(WorkingHoursActivity.this, (timePicker, selectedHour, selectedMinute) -> 
-                    // تعيين الوقت المختار داخل حقل النص بتنسيق (ساعة:دقيقة)
-                    et.setText(String.format(java.util.Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)), hour, minute, true);
+                    // تعيين الوقت المختار داخل حقل النص بتنسيق (ساعة:دقيقة) باللغة الإنجليزية
+                    et.setText(String.format(java.util.Locale.US, "%02d:%02d", selectedHour, selectedMinute)), hour, minute, true);
             mTimePicker.setTitle("Select Time"); // عنوان النافذة المنبثقة
             mTimePicker.show(); // عرض النافذة
         };
