@@ -2,7 +2,6 @@ package com.app.aqrab;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +12,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -24,8 +21,6 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 public class SettingsFragment extends Fragment {
 
@@ -34,16 +29,6 @@ public class SettingsFragment extends Fragment {
     // صورة البروفايل ومؤشر التحميل
     private ImageView ivProfile;
     private ProgressBar progressBar;
-
-    // مشغل لاختيار صورة من معرض الصور بالهاتف
-    private final ActivityResultLauncher<String> imagePickerLauncher = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    uploadImageToFirebase(uri);
-                }
-            }
-    );
 
     @Nullable
     @Override
@@ -111,8 +96,6 @@ public class SettingsFragment extends Fragment {
 
     // دالة إعداد مستمعي الأحداث للعناصر القابلة للضغط والتبديل
     private void setupListeners(View view) {
-        ivProfile.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
-
         // خيار تغيير لغة التطبيق عبر ديالوج
         view.findViewById(R.id.ll_change_language).setOnClickListener(v -> {
             String[] languages = {getString(R.string.language_english), "العربية", "Français"};
@@ -168,54 +151,6 @@ public class SettingsFragment extends Fragment {
                     .setNegativeButton(R.string.cancel_btn, null)
                     .show();
         });
-    }
-
-    // دالة رفع الصورة المختارة إلى Firebase Storage
-    private void uploadImageToFirebase(Uri imageUri) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) return;
-
-        if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        ivProfile.setEnabled(false);
-
-        String uid = user.getUid();
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                .child("profile_images/" + uid + ".jpg");
-
-        storageRef.putFile(imageUri).addOnSuccessListener(taskSnapshot -> {
-            storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                String downloadUrl = uri.toString();
-                updateUserPhotoUrl(downloadUrl);
-            });
-        }).addOnFailureListener(e -> {
-            if (progressBar != null) progressBar.setVisibility(View.GONE);
-            ivProfile.setEnabled(true);
-            Toast.makeText(getContext(), getString(R.string.upload_failed, e.getMessage()), Toast.LENGTH_SHORT).show();
-        });
-    }
-
-    private void updateUserPhotoUrl(String url) {
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("Pharmacies").document(uid).get().addOnSuccessListener(doc -> {
-            if (doc.exists()) {
-                db.collection("Pharmacies").document(uid).update("photoUrl", url)
-                        .addOnSuccessListener(aVoid -> onPhotoUpdateSuccess(url));
-            } else {
-                db.collection("Users").document(uid).update("photoUrl", url)
-                        .addOnSuccessListener(aVoid -> onPhotoUpdateSuccess(url));
-            }
-        });
-    }
-
-    private void onPhotoUpdateSuccess(String url) {
-        if (progressBar != null) progressBar.setVisibility(View.GONE);
-        ivProfile.setEnabled(true);
-        ivProfile.setPadding(0, 0, 0, 0);
-        ivProfile.setColorFilter(null);
-        Glide.with(this).load(url).circleCrop().into(ivProfile);
-        Toast.makeText(getContext(), R.string.profile_updated, Toast.LENGTH_SHORT).show();
     }
 
     private void deleteAccount() {

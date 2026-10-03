@@ -243,8 +243,10 @@ public class LoginActivity extends AppCompatActivity {
 
     // دالة فتح واجهة اختيار حساب جوجل
     private void signInWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent(); 
-        googleSignInLauncher.launch(signInIntent); 
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent(); 
+            googleSignInLauncher.launch(signInIntent); 
+        });
     }
 
     // دالة ربط بيانات جوجل بـ Firebase Auth والتوجيه التلقائي

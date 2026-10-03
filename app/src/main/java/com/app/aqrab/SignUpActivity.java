@@ -223,8 +223,10 @@ public class SignUpActivity extends AppCompatActivity {
 
     // فتح واجهة اختيار حساب جوجل
     private void signUpWithGoogle() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        googleSignUpLauncher.launch(signInIntent);
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            googleSignUpLauncher.launch(signInIntent);
+        });
     }
 
     // ربط حساب جوجل بـ Firebase وحفظ الدور المختار

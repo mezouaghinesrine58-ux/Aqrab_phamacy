@@ -49,15 +49,16 @@
             android:padding="20dp">
 
             <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="16dp">
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="20dp">
 
                 <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp">
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    app:cardCornerRadius="60dp"
+                    app:cardElevation="3dp">
 
                     <ImageView
                         android:id="@+id/iv_profile_pharmacy"
@@ -68,18 +69,6 @@
                         android:contentDescription="@string/todo" />
 
                 </androidx.cardview.widget.CardView>
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fab_edit_photo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="12dp"
-                    android:src="@android:drawable/ic_menu_camera"
-                    app:backgroundTint="#2E5A44"
-                    app:fabSize="mini"
-                    app:tint="@color/white"
-                    android:contentDescription="@string/todo" />
 
             </FrameLayout>
 

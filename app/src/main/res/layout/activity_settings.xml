@@ -74,9 +74,6 @@
                             android:layout_height="match_parent"
                             android:src="@drawable/ic_person"
                             android:scaleType="centerCrop"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:background="?attr/selectableItemBackground"
                             app:tint="#2E5A44" />
                         <ProgressBar
                             android:id="@+id/progress_bar_settings"
