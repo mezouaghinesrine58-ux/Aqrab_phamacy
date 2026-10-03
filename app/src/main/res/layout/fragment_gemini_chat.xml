@@ -64,7 +64,9 @@
         android:id="@+id/chat_input_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="115dp"
         app:cardCornerRadius="28dp"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -75,7 +77,6 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:padding="4dp"
-            android:paddingBottom="80dp"
             >
 
             <EditText
