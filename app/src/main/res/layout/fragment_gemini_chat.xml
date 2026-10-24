@@ -5,13 +5,64 @@
     android:layout_height="match_parent"
     android:background="#F8FBF9">
 
+    <!-- Minimal Top Action Buttons -->
+    <LinearLayout
+        android:id="@+id/ll_top_actions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- New Chat Action Button -->
+        <ImageView
+            android:id="@+id/btn_new_chat"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            android:padding="8dp"
+            android:src="@drawable/ic_add_circle"
+            app:tint="#2E5A44" />
+
+        <!-- Recent Chats History Action Button -->
+        <ImageView
+            android:id="@+id/btn_recent_chats"
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/app_name"
+            android:padding="8dp"
+            android:src="@drawable/ic_history"
+            app:tint="#2E5A44" />
+
+    </LinearLayout>
+
+    <!-- RecyclerView for Chat Bubbles -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_chat_messages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="12dp"
+        app:layout_constraintBottom_toTopOf="@+id/chat_input_container"
+        app:layout_constraintTop_toBottomOf="@id/ll_top_actions" />
+
+    <!-- Welcome Section (Shown when conversation is empty) -->
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/chat_scroll_view"
+        android:id="@+id/welcome_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@+id/chat_input_container"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/ll_top_actions">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,42 +75,86 @@
                 android:id="@+id/tv_welcome_plant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
                 android:text="🌿"
-                android:textSize="60sp"
-                android:layout_marginBottom="16dp" />
+                android:textSize="56sp" />
 
             <TextView
                 android:id="@+id/tv_welcome_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/hello"
                 android:textColor="#2E5A44"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center" />
+                android:textSize="22sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_welcome_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp"
+                android:gravity="center"
                 android:text="@string/chat_subtitle"
                 android:textColor="#616161"
-                android:textSize="16sp"
-                android:gravity="center" />
+                android:textSize="15sp" />
 
-            <TextView
-                android:id="@+id/tv_chat_response"
+            <!-- Quick Suggestion Chips -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:textColor="#2E5A44"
-                android:textSize="16sp"
-                android:visibility="gone" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/chip_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_chat_bubble_ai"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:text="💊 ما هي دواعي استخدام دواء الباراسيتامول؟"
+                    android:textColor="#2E5A44"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/chip_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_chat_bubble_ai"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:text="📷 التقاط صورة لوصفة طبية وتحليل مكوناتها"
+                    android:textColor="#2E5A44"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/chip_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_chat_bubble_ai"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp"
+                    android:text="🔍 ما الفرق بين أدوية الضغط وأدوية السكري؟"
+                    android:textColor="#2E5A44"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Chat Input Floating Container -->
     <androidx.cardview.widget.CardView
         android:id="@+id/chat_input_container"
         android:layout_width="match_parent"
@@ -67,41 +162,84 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="115dp"
-        app:cardCornerRadius="28dp"
+        app:cardCornerRadius="24dp"
         app:cardElevation="4dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="4dp"
-            >
+            android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/et_chat_input"
-                android:layout_width="0dp"
+            <!-- Attached Image Preview -->
+            <FrameLayout
+                android:id="@+id/image_preview_container"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:hint="@string/type_message"
-                android:inputType="textMultiLine"
-                android:maxLines="4"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="12dp"
-                android:textSize="15sp" />
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="12dp"
+                android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/btn_send"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginEnd="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="12dp"
-                android:src="@drawable/ic_navigation"
-                app:tint="#2E5A44" />
+                <ImageView
+                    android:id="@+id/iv_selected_image"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="#E0E0E0"
+                    android:scaleType="centerCrop" />
 
+                <ImageView
+                    android:id="@+id/btn_remove_image"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="top|end"
+                    android:background="@drawable/circle_bg"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_remove_circle"
+                    app:tint="#D32F2F" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <EditText
+                    android:id="@+id/et_chat_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/type_message"
+                    android:inputType="textMultiLine"
+                    android:maxLines="4"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="12dp"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:id="@+id/btn_camera"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/take_photo"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_camera"
+                    app:tint="#2E5A44" />
+
+                <ImageView
+                    android:id="@+id/btn_send"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_navigation"
+                    app:tint="#2E5A44" />
+
+            </LinearLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

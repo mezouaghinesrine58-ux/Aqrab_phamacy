@@ -33,6 +33,7 @@
     <string name="directions">Directions</string>
     <string name="thinking">Thinking...</string>
     <string name="error_chat">Sorry, something went wrong. Please try again.</string>
+    <string name="gemini_api_key" translatable="false">AQ.Ab8RN6LAanv3Sa2cfhwO14nWid3t7Wb7smR_XYDgJ2v8eDLt7g</string>
 
     <!-- Navigation Drawer -->
     <string name="nav_dashboard">Dashboard</string>
